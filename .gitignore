@@ -93,8 +93,10 @@ venv/
 
 .terraform
 .terraform*
+terraform.tfstate
+terraform.tfstate.backup
 .venv
-
+terraform*
 *.pem
 *.pemkey
 architecture/terraform_config/rds/.terraform/
