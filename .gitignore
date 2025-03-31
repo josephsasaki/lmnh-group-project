@@ -97,3 +97,4 @@ venv/
 
 *.pem
 *.pemkey
+architecture/terraform_config/rds/.terraform/
