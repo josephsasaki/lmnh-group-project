@@ -135,6 +135,10 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+terraform.tfvars
+terraform.tfstate*
+.terraform
+.terraform.lock.hcl
 
 # Spyder project settings
 .spyderproject
