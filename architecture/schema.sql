@@ -8,41 +8,41 @@ DROP TABLE IF EXISTS continent;
 
 CREATE TABLE continent (
     continent_id SMALLINT IDENTITY(1,1) PRIMARY KEY,
-    continent_name VARCHAR(50) UNIQUE
-),
+    continent_name VARCHAR(50) UNIQUE NOT NULL
+);
 
 CREATE TABLE country (
     country_id SMALLINT IDENTITY(1,1) PRIMARY KEY,
-    country_name VARCHAR(50) UNIQUE,
-    country_capital VARCHAR(50) UNIQUE,
+    country_name VARCHAR(50) UNIQUE NOT NULL,
+    country_capital VARCHAR(50) UNIQUE NOT NULL,
     continent_id SMALLINT NOT NULL,
     CONSTRAINT fk_country_continent FOREIGN KEY (continent_id) 
         REFERENCES continent (continent_id) 
-),
+);
 
 CREATE TABLE city (
     city_id SMALLINT IDENTITY(1,1) PRIMARY KEY,
-    city_name VARCHAR(50) UNIQUE,
-    city_latitude FLOAT,
-    city_longitude FLOAT,
+    city_name VARCHAR(50) UNIQUE NOT NULL,
+    city_latitude FLOAT NOT NULL,
+    city_longitude FLOAT NOT NULL,
     country_id SMALLINT NOT NULL,
     CONSTRAINT fk_city_country FOREIGN KEY (country_id) 
         REFERENCES country (country_id) 
-),
+);
 
 CREATE TABLE plant_type (
     plant_type_id SMALLINT PRIMARY KEY,
-    plant_type_name VARCHAR(100),
+    plant_type_name VARCHAR(100) NOT NULL,
     plant_type_scientific_name VARCHAR(100),
     plant_image_url VARCHAR(100)
-),
+);
 
 CREATE TABLE botanist(
     botanist_id SMALLINT IDENTITY(1,1) PRIMARY KEY,
-    botanist_name VARCHAR(50),
-    botanist_email VARCHAR(100),
-    botanist_phone VARCHAR(50)
-),
+    botanist_name VARCHAR(50) NOT NULL,
+    botanist_email VARCHAR(100) NOT NULL,
+    botanist_phone VARCHAR(50) NOT NULL
+);
 
 CREATE TABLE plant(
     plant_id SMALLINT IDENTITY(1,1) PRIMARY KEY,
@@ -56,14 +56,25 @@ CREATE TABLE plant(
         REFERENCES botanist (botanist_id),
     CONSTRAINT fk_plant_city FOREIGN KEY (city_id) 
         REFERENCES city (city_id) 
-),
+);
 
 CREATE TABLE record(
     record_id SMALLINT IDENTITY(1,1) PRIMARY KEY,
     record_soil_temperature FLOAT,
     record_temperature FLOAT,
-    record_time DATETIME
-)
+    record_time DATETIME NOT NULL,
+    plant_id SMALLINT NOT NULL,
+        CONSTRAINT fk_record_plant_type FOREIGN KEY (plant_id) 
+        REFERENCES plant (plant_id)
+);
 
-
+INSERT INTO continent (continent_name) 
+VALUES 
+    ('Africa'),
+    ('Antarctica'),
+    ('Asia'),
+    ('Europe'),
+    ('North America'),
+    ('Oceania'),
+    ('South America');
 
