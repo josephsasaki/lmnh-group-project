@@ -12,17 +12,17 @@ provider "aws" {
 }
 
 data "aws_vpc" "c16_vpc" {
-  id = "vpc-0f7ba8057a52dd82d"
+  id = var.VPC_ID
 }
 
 resource "aws_security_group" "c16-trenet-sg" {
-  name        = "c16-trenet-sg"
-  description = "Sg for botanical db"
+  name        = var.SG_NAME
+  description = "Sg for sql server rds"
   vpc_id      = data.aws_vpc.c16_vpc.id
 
   ingress {
-    from_port        = 5432
-    to_port          = 5432
+    from_port        = 1433
+    to_port          = 1433
     protocol         = "tcp"
     cidr_blocks      = ["0.0.0.0/0"]
     ipv6_cidr_blocks = ["::/0"]
@@ -36,21 +36,21 @@ resource "aws_security_group" "c16-trenet-sg" {
     ipv6_cidr_blocks = ["::/0"]
   }
   tags = {
-    Name = "c16-trenet-sg"
+    Name = var.SG_NAME
   }
 }
 
 
 resource "aws_db_instance" "c16-trenet-rds" {
   allocated_storage            = 20
-  identifier                   = "c16-trenet-rds"
+  identifier                   = var.RDS_NAME
   engine                       = "sqlserver-ex"
   engine_version               = "16.00.4175.1.v1"
   instance_class               = "db.t3.micro"
   publicly_accessible          = true
   performance_insights_enabled = false
   skip_final_snapshot          = true
-  db_subnet_group_name         = "c16-public-subnet-group"
+  db_subnet_group_name         = var.RDS_SUBNET_GROUP_NAME
   vpc_security_group_ids       = [aws_security_group.c16-trenet-sg.id]
   username                     = var.DB_USERNAME
   password                     = var.DB_PASSWORD
