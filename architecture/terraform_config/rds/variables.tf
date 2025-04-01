@@ -6,4 +6,6 @@ variable "DB_PASSWORD" {
   type = string
 }
 
-
+variable "REGION" {
+  type = string
+}
