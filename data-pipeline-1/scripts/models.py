@@ -1,9 +1,14 @@
 from datetime import datetime
+import re
 import pandas as pd
 
 
 class Botanist:
-    def __init__(self, botanist_dict_data: dict):
+    def __init__(self, botanist_dict_data: dict) -> None:
+        if not isinstance(botanist_dict_data, dict):
+            raise ValueError(
+                f'The input data is not the correct type. It should be a dict but it is a {type(botanist_dict_data)}.')
+
         self.__email = Botanist.clean_email(botanist_dict_data.get("email"))
         self.__name = Botanist.clean_name(botanist_dict_data.get("name"))
         self.__phone = Botanist.clean_phone(botanist_dict_data.get("phone"))
@@ -21,6 +26,9 @@ class Botanist:
     def clean_name(name_in: str) -> str:
         if name_in is None:
             raise ValueError("Name value is not included in the input data")
+        if not name_in:
+            raise ValueError(
+                f"The name attribute '{name_in}' does not hold a valid value.")
         return name_in
 
     @staticmethod
@@ -28,35 +36,60 @@ class Botanist:
         if phone_in is None:
             raise ValueError("Phone value is not included in the input data")
 
-        phone_in = list(phone_in)
-        clean_phone = []
-        for char in phone_in:
-            if char.isnumeric():
-                clean_phone.append(char)
+        phone_format_one = bool(re.fullmatch(
+            r'\d{3}-\d{3}-\d{3}-\d{4}x\d{3}', phone_in))
+        phone_format_two = bool(re.fullmatch(
+            r'\(\d{3}\)\d{3}-\d{4}x\d{5}', phone_in))
+        if not phone_format_one and not phone_format_two:
+            raise ValueError('Phone number does not follow a correct format.')
 
-        return ''.join(clean_phone)
+        return phone_in
 
 
 class Location:
-    def __init__(self, location_dict_data: dict):
+    COUNT_OF_LOCATION_ATTRIBUTES = 5
+
+    def __init__(self, location_data: list) -> None:
+        if not isinstance(location_data, list):
+            raise ValueError(
+                f'The input data is not the correct type. It should be a list but it is a {type(location_data)}.')
+
+        location_dict_data = Location.convert_location_data_to_dict(
+            location_data)
+
         self.__latitude = Location.clean_latitude_longitude(
             location_dict_data.get('latitude'))
         self.__longitude = Location.clean_latitude_longitude(
             location_dict_data.get('longitude'))
-        self.__city_name = Location.clean_city_name(
-            location_dict_data.get('latitude'))
-        self.__country_name = Location.convert_country_code_to_name(
+        self.__city = Location.clean_city_name(
+            location_dict_data.get('city_name'))
+        self.__country = Location.convert_country_code_to_name(
             location_dict_data.get('country_code'))
-        continent, capital = location_dict_data.get('continent_capital')
+        continent, capital = Location.clean_continent_capital(
+            location_dict_data.get('continent_capital'))
         self.__continent = continent
         self.__capital = capital
+
+    @staticmethod
+    def convert_location_data_to_dict(location_data_in: list) -> dict:
+        if len(location_data_in) != Location.COUNT_OF_LOCATION_ATTRIBUTES:
+            raise ValueError(
+                f"There should be {Location.COUNT_OF_LOCATION_ATTRIBUTES} values in the location data, instead there is {len(location_data_in)}")
+
+        return {
+            "latitude": location_data_in[0],
+            "longitude": location_data_in[1],
+            "city_name": location_data_in[2],
+            "country_code": location_data_in[3],
+            "continent_capital": location_data_in[4]
+        }
 
     @staticmethod
     def convert_country_code_to_name(country_code_in: str) -> str:
         if country_code_in is None:
             raise ValueError(
                 'The country code attribute is not included in the input data.')
-        df_country = pd.read_csv('country_code_data/code_to_name.csv')
+        df_country = pd.read_csv('../country_code_data/code_to_name.csv')
         df_country = df_country[df_country['alpha-2']
                                 == country_code_in.upper()]
         country = df_country['name'].iloc[0]
@@ -74,10 +107,11 @@ class Location:
         if coordinate_in is None:
             raise ValueError(
                 'The latitude or longitude attribute is not included in the input data.')
-        if not isinstance(coordinate_in, float):
+        try:
+            return float(coordinate_in)
+        except ValueError:
             raise ValueError(
-                f'Value {coordinate_in} is not suitable for latitude or longitude as its not a float.')
-        return coordinate_in
+                f'Value {coordinate_in} is not suitable for latitude or longitude as it cant be converted to a float.')
 
     @staticmethod
     def clean_continent_capital(continent_capital_in: str) -> tuple[str]:
@@ -92,13 +126,13 @@ class Record:
     MAX_SOIL_MOISTURE = 100
     MIN_SOIL_MOISTURE = 0
 
-    def __init__(self, record_dict_data: dict):
+    def __init__(self, record_dict_data: dict) -> None:
         """Initialises the Record class"""
         self.__soil_moisture = Record.clean_soil_moisture(
             record_dict_data.get('soil_moisture'))
         self.__temperature = Record.clean_temperature(
             record_dict_data.get('temperature'))
-        self.__timestamp = Record.clean_time(
+        self.__taken = Record.clean_taken_time(
             record_dict_data.get('recording_taken'))
 
     @staticmethod
@@ -110,36 +144,98 @@ class Record:
             raise ValueError(
                 f'Soil moisture level of {soil_moisture_in} is not valid')
 
-        return soil_moisture_in
+        return round(soil_moisture_in, 2)
 
     @staticmethod
     def clean_temperature(temperature_in: float) -> float:
         if temperature_in is None:
             raise ValueError(f'Temperature not included in record data')
 
-        return temperature_in
+        return round(temperature_in, 2)
 
     @staticmethod
-    def clean_time(time_in: str) -> datetime:
-        if time_in is None:
+    def clean_taken_time(timestamp_in: str) -> datetime:
+        if timestamp_in is None:
             raise ValueError(f'Time not included in record data')
 
         try:
-            time_in = datetime.strptime(time_in, "%Y-%m-%d %H:%M:%S")
-            if time_in > datetime.now():
+            timestamp_in = datetime.strptime(timestamp_in, "%Y-%m-%d %H:%M:%S")
+            if timestamp_in > datetime.now():
                 raise ValueError(
-                    f'The time ({time_in}) is invalid as it is in the future')
-            return time_in
+                    f'The time ({timestamp_in}) is invalid as it is in the future')
+            return timestamp_in
         except ValueError:
             raise ValueError(
-                f'The time ({time_in} is in an invalid format. Format should be "%Y-%m-%d %H:%M:%S")')
+                f'The time ({timestamp_in} is in an invalid format. Format should be "%Y-%m-%d %H:%M:%S")')
+
+
+class PlantType:
+    def __init__(self, plant_type_dict_data: dict) -> None:
+        self.__name = PlantType.clean_plant_type_name(
+            plant_type_dict_data.get('name'))
+        self.__scientific_name = PlantType.clean_plant_type_scientific_name(
+            plant_type_dict_data.get('scientific_name'))
+        self.__image_url = PlantType.clean_image_url(
+            plant_type_dict_data.get('images'))
+
+    @staticmethod
+    def clean_plant_type_name(plant_type_name_in: str) -> str:
+        if plant_type_name_in is None:
+            raise ValueError(
+                "The plant type name attribute is not included in the input data.")
+        if not plant_type_name_in:
+            raise ValueError(
+                f'Plant type name value: "{plant_type_name_in}", is not valid')
+        return plant_type_name_in
+
+    @staticmethod
+    def clean_plant_type_scientific_name(plant_type_scientific_name_in: list[str]) -> str | None:
+        if not plant_type_scientific_name_in:
+            return None
+        if not isinstance(plant_type_scientific_name_in, list):
+            raise ValueError(
+                'The scientific name for the plant should be input as a list')
+        return plant_type_scientific_name_in[0]
+
+    @staticmethod
+    def clean_image_url(images_url_in: dict | None) -> str | None:
+        if images_url_in is None:
+            return None
+        image_url = images_url_in.get('original_url')
+        if image_url is None:
+            return None
+        if image_url[0:8] == "https://" and image_url[-3:] == "jpg":
+            return image_url
+        return None
 
 
 class Plant:
     # Plant should take in all data, make all the objects it needs, and put them in an attribute itself.
-    def __init__(self, all_data: dict):
+    def __init__(self, response_data: dict) -> None:
         self.__last_watered = Plant.clean_last_watered(
-            plant_dict_data.get('last_watered'))
+            response_data.get('last_watered'))
+        self.__plant_number = Plant.clean_plant_number(
+            response_data.get('plant_id'))
+        # object instantiation
+        self.__botanist = Botanist(response_data.get('botanist'))
+        self.__location = Location(response_data.get('origin_location'))
+        self.__record = Record({
+            "soil_moisture": response_data.get('soil_moisture'),
+            "temperature": response_data.get('temperature'),
+            "recording_taken": response_data.get('recording_taken'),
+        })
+        self.__plant_type = PlantType({
+            "name": response_data.get('name'),
+            "scientific_name": response_data.get("scientific_name"),
+            "images": response_data.get("images")
+        })
+
+    @staticmethod
+    def clean_plant_number(plant_number_in: int) -> int:
+        if plant_number_in is None:
+            raise ValueError(
+                'There is no plant number in the response object.')
+        return plant_number_in
 
     @staticmethod
     def clean_last_watered(last_watered_in: str) -> datetime:
@@ -147,7 +243,7 @@ class Plant:
             raise ValueError(f'The last_watered attribute is not included')
         try:
             last_watered_in = datetime.strptime(
-                last_watered_in, "%Y-%m-%d %H:%M:%S")
+                last_watered_in, "%a, %d %b %Y %H:%M:%S %Z")
             if last_watered_in > datetime.now():
                 raise ValueError(
                     f'The time ({last_watered_in}) is invalid as it is in the future')
@@ -155,24 +251,3 @@ class Plant:
         except ValueError:
             raise ValueError(
                 f'The time ({last_watered_in} is in an invalid format. Format should be "%Y-%m-%d %H:%M:%S")')
-
-    @staticmethod
-    def id_checker(id_in: int, id_name: str) -> None:
-        if not isinstance(id_in, int):
-            raise TypeError(f'{id_name} is not an integer')
-
-    def set_plant_type_id(self, plant_type_id_in: int):
-        Plant.id_checker(plant_type_id_in)
-        self.__plant_type_id = plant_type_id_in
-
-    def set_botanist_id(self, botanist_id_in: int):
-        Plant.id_checker(botanist_id_in)
-        self.__botanist_id = botanist_id_in
-
-    def set_city_id(self, city_id_in: int):
-        Plant.id_checker(city_id_in)
-        self.__city_id = city_id_in
-
-
-if __name__ == '__main__':
-    Location.convert_country_code_to_name('AU')
