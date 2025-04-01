@@ -136,7 +136,7 @@ class Record:
 
 
 class Plant:
-    # plabnt should take in all data and make all th eobjects its needs and put themin an attribute itself.
+    # Plant should take in all data, make all the objects it needs, and put them in an attribute itself.
     def __init__(self, all_data: dict):
         self.__last_watered = Plant.clean_last_watered(
             plant_dict_data.get('last_watered'))
