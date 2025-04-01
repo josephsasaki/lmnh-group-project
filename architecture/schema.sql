@@ -50,6 +50,7 @@ CREATE TABLE plant(
     botanist_id SMALLINT NOT NULL,
     city_id SMALLINT NOT NULL,
     plant_last_watered DATETIME,
+    plant_number SMALLINT NOT NULL,
     CONSTRAINT fk_plant_plant_type FOREIGN KEY (plant_type_id) 
         REFERENCES plant_type (plant_type_id),
     CONSTRAINT fk_plant_botanist FOREIGN KEY (botanist_id) 
@@ -64,7 +65,7 @@ CREATE TABLE record(
     record_temperature FLOAT,
     record_time DATETIME NOT NULL,
     plant_id SMALLINT NOT NULL,
-        CONSTRAINT fk_record_plant_type FOREIGN KEY (plant_id) 
+    CONSTRAINT fk_record_plant_type FOREIGN KEY (plant_id) 
         REFERENCES plant (plant_id)
 );
 
