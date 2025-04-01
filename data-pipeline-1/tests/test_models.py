@@ -6,7 +6,7 @@ FULL_RAW_JSON = {
     "botanist": {
         "email": "test.test@lnhm.co.uk",
         "name": "Test Test",
-        "phone": "07517966650"
+        "phone": "001-481-273-3691x127"
     },
     "images": {
         "license": 451,
@@ -37,34 +37,34 @@ FULL_RAW_JSON = {
 
 class TestBotanist:
 
-    def test_botanist_init():
+    def test_botanist_init(self):
         raw_json = {
             "email": "test.test@lmnh.com",
             "name": "Test Test",
-            "phone": "07517966650"
+            "phone": "001-481-273-3691x127"
         }
         botanist = Botanist(raw_json)
         assert botanist._Botanist__email == "test.test@lmnh.com"
         assert botanist._Botanist__name == "Test Test"
-        assert botanist._Botanist__phone == "07517966650"
+        assert botanist._Botanist__phone == "001-481-273-3691x127"
 
-    def test_botanist_missing_email():
+    def test_botanist_missing_email(self):
         raw_json = {
             "name": "Test Test",
-            "phone": "07517966650"
+            "phone": "001-481-273-3691x127"
         }
         with pytest.raises(ValueError):
             botanist = Botanist(raw_json)
 
-    def test_botanist_missing_name():
+    def test_botanist_missing_name(self):
         raw_json = {
             "email": "test.test@lmnh.com",
-            "phone": "07517966650"
+            "phone": "001-481-273-3691x127"
         }
         with pytest.raises(ValueError):
             botanist = Botanist(raw_json)
 
-    def test_botanist_missing_phone():
+    def test_botanist_missing_phone(self):
         raw_json = {
             "name": "Test Test",
             "email": "test.test@lmnh.com",
@@ -72,34 +72,25 @@ class TestBotanist:
         with pytest.raises(ValueError):
             botanist = Botanist(raw_json)
 
-    def test_botanist_invalid_email():
+    def test_botanist_invalid_email(self):
         raw_json = {
             "email": "test.test",
             "name": "Test Test",
-            "phone": "07517966650",
+            "phone": "001-481-273-3691x127",
         }
         with pytest.raises(ValueError):
             botanist = Botanist(raw_json)
 
-    def test_botanist_invalid_name():
+    def test_botanist_invalid_name(self):
         raw_json = {
             "email": "test.test@lmnh.com",
             "name": "",
-            "phone": "07517966650",
+            "phone": "001-481-273-3691x127",
         }
         with pytest.raises(ValueError):
             botanist = Botanist(raw_json)
 
-    def test_botanist_invalid_phone():
-        raw_json = {
-            "email": "test.test@lmnh.com",
-            "name": "Test Test",
-            "phone": "5739",
-        }
-        with pytest.raises(ValueError):
-            botanist = Botanist(raw_json)
-
-    def test_botanist_invalid_phone():
+    def test_botanist_invalid_phone(self):
         raw_json = {
             "email": "test.test@lmnh.com",
             "name": "Test Test",
@@ -111,7 +102,7 @@ class TestBotanist:
 
 class TestLocation:
 
-    def test_location_init():
+    def test_location_init(self):
         raw_json = [
             "5.27247",
             "-3.59625",
@@ -123,11 +114,11 @@ class TestLocation:
         assert location._Location__latitude == 5.27247
         assert location._Location__longitude == -3.59625
         assert location._Location__city == "Bonoua"
-        assert location._Location__country == "CI"
+        assert location._Location__country == "Côte d'Ivoire"
         assert location._Location__capital == "Abidjan"
         assert location._Location__continent == "Africa"
 
-    def test_location_missing_latitude():
+    def test_location_missing_latitude(self):
         raw_json = [
             "-3.59625",
             "Bonoua",
@@ -137,7 +128,7 @@ class TestLocation:
         with pytest.raises(ValueError):
             location = Location(raw_json)
 
-    def test_location_missing_longitude():
+    def test_location_missing_longitude(self):
         raw_json = [
             "5.27247"
             "Bonoua",
@@ -147,7 +138,7 @@ class TestLocation:
         with pytest.raises(ValueError):
             location = Location(raw_json)
 
-    def test_location_missing_city():
+    def test_location_missing_city(self):
         raw_json = [
             "5.27247"
             "-3.59625",
@@ -157,7 +148,7 @@ class TestLocation:
         with pytest.raises(ValueError):
             location = Location(raw_json)
 
-    def test_location_missing_country():
+    def test_location_missing_country(self):
         raw_json = [
             "5.27247"
             "-3.59625",
@@ -167,7 +158,7 @@ class TestLocation:
         with pytest.raises(ValueError):
             location = Location(raw_json)
 
-    def test_location_missing_continent():
+    def test_location_missing_continent(self):
         raw_json = [
             "5.27247"
             "-3.59625",
@@ -178,7 +169,7 @@ class TestLocation:
         with pytest.raises(ValueError):
             location = Location(raw_json)
 
-    def test_location_missing_capital():
+    def test_location_missing_capital(self):
         raw_json = [
             "5.27247"
             "-3.59625",
@@ -189,7 +180,7 @@ class TestLocation:
         with pytest.raises(ValueError):
             location = Location(raw_json)
 
-    def test_location_missing_continent_and_capital():
+    def test_location_missing_continent_and_capital(self):
         raw_json = [
             "5.27247"
             "-3.59625",
@@ -202,7 +193,7 @@ class TestLocation:
 
 class TestRecord:
 
-    def test_record_init():
+    def test_record_init(self):
         raw_json = {
             "soil_moisture": 34.68277436878728,
             "temperature": 11.541849271315279,
@@ -218,7 +209,7 @@ class TestRecord:
         assert record._Record__taken.minute == 38
         assert record._Record__taken.second == 10
 
-    def test_record_missing_soil_moisture():
+    def test_record_missing_soil_moisture(self):
         raw_json = {
             "soil_moisture": 34.68277436878728,
             "temperature": 11.541849271315279,
@@ -227,7 +218,7 @@ class TestRecord:
         with pytest.raises(ValueError):
             record = Record(raw_json)
 
-    def test_record_missing_soil_moisture():
+    def test_record_missing_soil_moisture(self):
         raw_json = {
             "temperature": 11.541849271315279,
             "recording_taken": "2025-04-01 07:38:10",
@@ -235,7 +226,7 @@ class TestRecord:
         with pytest.raises(ValueError):
             record = Record(raw_json)
 
-    def test_record_missing_temperature():
+    def test_record_missing_temperature(self):
         raw_json = {
             "soil_moisture": 34.68277436878728,
             "recording_taken": "2025-04-01 07:38:10",
@@ -243,7 +234,7 @@ class TestRecord:
         with pytest.raises(ValueError):
             record = Record(raw_json)
 
-    def test_record_missing_recording_taken():
+    def test_record_missing_recording_taken(self):
         raw_json = {
             "soil_moisture": 34.68277436878728,
             "temperature": 11.541849271315279,
@@ -251,9 +242,9 @@ class TestRecord:
         with pytest.raises(ValueError):
             record = Record(raw_json)
 
-    def test_record_invalid_soil_moisture():
+    def test_record_invalid_soil_moisture(self):
         raw_json = {
-            "soil_moisture": 34.68277436878728,
+            "soil_moisture": 123.68277436878728,
             "temperature": 11.541849271315279,
             "recording_taken": "2025-04-01 07:38:10",
         }
@@ -263,10 +254,10 @@ class TestRecord:
 
 class TestPlantType:
 
-    def test_plant_type_init():
+    def test_plant_type_init(self):
         raw_json = {
             "name": "Palm Tree",
-            "scientific_name": "Arecaceae",
+            "scientific_name": ["Arecaceae"],
             "images": {
                 "license": 451,
                 "license_name": "CC0 1.0 Universal (CC0 1.0) Public Domain Dedication",
@@ -283,9 +274,9 @@ class TestPlantType:
         assert plant_type._PlantType__scientific_name == "Arecaceae"
         assert plant_type._PlantType__image_url == "https://test.com/storage/image/orig_image.jpg"
 
-    def test_plant_missing_name():
+    def test_plant_missing_name(self):
         raw_json = {
-            "scientific_name": "Arecaceae",
+            "scientific_name": ["Arecaceae"],
             "images": {
                 "license": 451,
                 "license_name": "CC0 1.0 Universal (CC0 1.0) Public Domain Dedication",
@@ -300,7 +291,7 @@ class TestPlantType:
         with pytest.raises(ValueError):
             PlantType(raw_json)
 
-    def test_plant_missing_scientific_name_allowed():
+    def test_plant_missing_scientific_name_allowed(self):
         raw_json = {
             "name": "Palm Tree",
             "images": {
@@ -318,10 +309,10 @@ class TestPlantType:
         assert plant_type._PlantType__name == "Palm Tree"
         assert plant_type._PlantType__scientific_name is None
 
-    def test_plant_type_missing_image_allowed():
+    def test_plant_type_missing_image_allowed(self):
         raw_json = {
             "name": "Palm Tree",
-            "scientific_name": "Arecaceae",
+            "scientific_name": ["Arecaceae"],
         }
         plant_type = PlantType(raw_json)
         assert plant_type._PlantType__name == "Palm Tree"
@@ -331,24 +322,24 @@ class TestPlantType:
 
 class TestPlant():
 
-    def test_plant_init_botanist():
+    def test_plant_init_botanist(self):
         raw_json = FULL_RAW_JSON
         plant = Plant(raw_json)
         assert plant._Plant__botanist._Botanist__email == "test.test@lnhm.co.uk"
         assert plant._Plant__botanist._Botanist__name == "Test Test"
-        assert plant._Plant__botanist._Botanist__phone == "07517966650"
+        assert plant._Plant__botanist._Botanist__phone == "001-481-273-3691x127"
 
-    def test_plant_init_location():
+    def test_plant_init_location(self):
         raw_json = FULL_RAW_JSON
         plant = Plant(raw_json)
         assert plant._Plant__location._Location__latitude == 5.27247
         assert plant._Plant__location._Location__longitude == -3.59625
         assert plant._Plant__location._Location__city == "Bonoua"
-        assert plant._Plant__location._Location__country == "CI"
+        assert plant._Plant__location._Location__country == "Côte d'Ivoire"
         assert plant._Plant__location._Location__capital == "Abidjan"
         assert plant._Plant__location._Location__continent == "Africa"
 
-    def test_plant_init_record():
+    def test_plant_init_record(self):
         raw_json = FULL_RAW_JSON
         plant = Plant(raw_json)
         assert plant._Plant__record._Record__soil_moisture == 34.68
@@ -360,19 +351,19 @@ class TestPlant():
         assert plant._Plant__record._Record__taken.minute == 38
         assert plant._Plant__record._Record__taken.second == 10
 
-    def test_plant_init_plant_type():
+    def test_plant_init_plant_type(self):
         raw_json = FULL_RAW_JSON
         plant = Plant(raw_json)
         assert plant._Plant__plant_type._PlantType__name == "Palm Tree"
         assert plant._Plant__plant_type._PlantType__scientific_name == "Arecaceae"
 
-    def test_plant_init():
+    def test_plant_init(self):
         raw_json = FULL_RAW_JSON
         plant = Plant(raw_json)
         assert plant._Plant__plant_number == 8
         assert plant._Plant__last_watered.year == 2025
-        assert plant._Plant__last_watered.month == 31
-        assert plant._Plant__last_watered.day == 3
+        assert plant._Plant__last_watered.month == 3
+        assert plant._Plant__last_watered.day == 31
         assert plant._Plant__last_watered.hour == 13
         assert plant._Plant__last_watered.minute == 23
         assert plant._Plant__last_watered.second == 1
