@@ -3,7 +3,7 @@ import pandas as pd
 
 
 class Botanist:
-    def __init__(self, botanist_dict_data: dict):
+    def __init__(self, botanist_dict_data: dict) -> None:
         self.__email = Botanist.clean_email(botanist_dict_data.get("email"))
         self.__name = Botanist.clean_name(botanist_dict_data.get("name"))
         self.__phone = Botanist.clean_phone(botanist_dict_data.get("phone"))
@@ -38,7 +38,7 @@ class Botanist:
 
 
 class Location:
-    def __init__(self, location_dict_data: dict):
+    def __init__(self, location_dict_data: dict) -> None:
         self.__latitude = Location.clean_latitude_longitude(
             location_dict_data.get('latitude'))
         self.__longitude = Location.clean_latitude_longitude(
@@ -92,13 +92,13 @@ class Record:
     MAX_SOIL_MOISTURE = 100
     MIN_SOIL_MOISTURE = 0
 
-    def __init__(self, record_dict_data: dict):
+    def __init__(self, record_dict_data: dict) -> None:
         """Initialises the Record class"""
         self.__soil_moisture = Record.clean_soil_moisture(
             record_dict_data.get('soil_moisture'))
         self.__temperature = Record.clean_temperature(
             record_dict_data.get('temperature'))
-        self.__timestamp = Record.clean_time(
+        self.__timestamp = Record.clean_timestamp(
             record_dict_data.get('recording_taken'))
 
     @staticmethod
@@ -120,24 +120,41 @@ class Record:
         return temperature_in
 
     @staticmethod
-    def clean_time(time_in: str) -> datetime:
-        if time_in is None:
+    def clean_timestamp(timestamp_in: str) -> datetime:
+        if timestamp_in is None:
             raise ValueError(f'Time not included in record data')
 
         try:
-            time_in = datetime.strptime(time_in, "%Y-%m-%d %H:%M:%S")
-            if time_in > datetime.now():
+            timestamp_in = datetime.strptime(timestamp_in, "%Y-%m-%d %H:%M:%S")
+            if timestamp_in > datetime.now():
                 raise ValueError(
-                    f'The time ({time_in}) is invalid as it is in the future')
-            return time_in
+                    f'The time ({timestamp_in}) is invalid as it is in the future')
+            return timestamp_in
         except ValueError:
             raise ValueError(
-                f'The time ({time_in} is in an invalid format. Format should be "%Y-%m-%d %H:%M:%S")')
+                f'The time ({timestamp_in} is in an invalid format. Format should be "%Y-%m-%d %H:%M:%S")')
+
+
+class PlantType:
+    def __init__(self, plant_type_dict_data: dict) -> None:
+        self.plant_type_name = PlantType.clean_plant_type_name()
+        self.plant_type_scientific_name = ...
+        self.image_url = ...
+
+    @staticmethod
+    def clean_plant_type_name(plant_type_name_in: str) -> str:
+        if plant_type_name_in is None:
+            raise ValueError(
+                "The plant type name attribute is not included in the input data.")
+        if not plant_type_name_in:
+            raise ValueError(
+                f'Plant type name value: "{plant_type_name_in}", is not valid')
+        return plant_type_name_in
 
 
 class Plant:
     # Plant should take in all data, make all the objects it needs, and put them in an attribute itself.
-    def __init__(self, all_data: dict):
+    def __init__(self, all_data: dict) -> None:
         self.__last_watered = Plant.clean_last_watered(
             plant_dict_data.get('last_watered'))
 
