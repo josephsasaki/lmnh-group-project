@@ -1,6 +1,5 @@
 import requests
 import multiprocessing as mp
-import time
 
 
 class Extract:
