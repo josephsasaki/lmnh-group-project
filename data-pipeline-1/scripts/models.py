@@ -1,4 +1,5 @@
 from datetime import datetime
+import pandas as pd
 
 
 class Botanist:
@@ -34,6 +35,56 @@ class Botanist:
                 clean_phone.append(char)
 
         return ''.join(clean_phone)
+
+
+class Location:
+    def __init__(self, location_dict_data: dict):
+        self.__latitude = Location.clean_latitude_longitude(
+            location_dict_data.get('latitude'))
+        self.__longitude = Location.clean_latitude_longitude(
+            location_dict_data.get('longitude'))
+        self.__city_name = Location.clean_city_name(
+            location_dict_data.get('latitude'))
+        self.__country_name = Location.convert_country_code_to_name(
+            location_dict_data.get('country_code'))
+        continent, capital = location_dict_data.get('continent_capital')
+        self.__continent = continent
+        self.__capital = capital
+
+    @staticmethod
+    def convert_country_code_to_name(country_code_in: str):
+        if country_code_in is None:
+            raise ValueError(
+                'The country code attribute is not included in the input data.')
+        df_country = pd.read_csv('country_code_data/code_to_name.csv')
+        df_country = df_country[df_country['alpha-2']
+                                == country_code_in.upper()]
+        country = df_country['name'].iloc[0]
+        return country
+
+    @staticmethod
+    def clean_city_name(city_name_in: str):
+        if city_name_in is None:
+            raise ValueError(
+                'The city name attribute is not included in the input data.')
+        return city_name_in
+
+    @staticmethod
+    def clean_latitude_longitude(coordinate_in: float):
+        if coordinate_in is None:
+            raise ValueError(
+                'The latitude or longitude attribute is not included in the input data.')
+        if not isinstance(coordinate_in, float):
+            raise ValueError(
+                f'Value {coordinate_in} is not suitable for latitude or longitude as its not a float.')
+        return coordinate_in
+
+    @staticmethod
+    def clean_continent_capital(continent_capital_in: str):
+        if continent_capital_in is None:
+            return ValueError('The country and capital attribute is not included in the input data.')
+        continent_capital_list = continent_capital_in.split('/')
+        return continent_capital_list[0], continent_capital_list[1]
 
 
 class Record:
@@ -119,3 +170,7 @@ class Plant:
     def set_city_id(self, city_id_in: int):
         Plant.id_checker(city_id_in)
         self.__city_id = city_id_in
+
+
+if __name__ == '__main__':
+    Location.convert_country_code_to_name('AU')
