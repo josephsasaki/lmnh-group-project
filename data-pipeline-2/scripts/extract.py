@@ -7,7 +7,6 @@
 import os
 import datetime as datetime
 import pandas as pd
-from pandas import DataFrame
 import pymysql
 from dotenv import load_dotenv
 
@@ -21,6 +20,7 @@ class Extract:
             WHERE record_taken < NOW() - INTERVAL 24 HOUR
         )
         SELECT 
+            o24h.record_id,
             p.plant_number, 
             o24h.soil_moisture, 
             o24h.temperature,
@@ -35,7 +35,7 @@ class Extract:
     '''
 
     @staticmethod
-    def get_connection():
+    def _get_connection():
         '''Get the connection to the RDS, using credentials from the .env file.'''
         load_dotenv()
         return pymysql.connect(
@@ -45,7 +45,7 @@ class Extract:
             database=os.environ['DB_NAME'],
         )
 
-    def extract_data_to_be_archived() -> DataFrame:
+    def extract_data_to_be_archived() -> pd.DataFrame:
         '''Extract the rows from the RDS which are outside the 24 hour window.'''
-        with Extract.get_connection() as connection:
+        with Extract._get_connection() as connection:
             return pd.read_sql(Extract.QUERY, connection)

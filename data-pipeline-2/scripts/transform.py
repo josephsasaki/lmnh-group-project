@@ -6,7 +6,6 @@
 
 import os
 import pandas as pd
-from pandas import DataFrame
 
 
 class Transform:
@@ -16,6 +15,12 @@ class Transform:
         __file__), '..', 'data', 'archived_data.csv')
 
     @staticmethod
-    def convert_dataframe_to_csv(data: DataFrame):
+    def convert_dataframe_to_csv(data: pd.DataFrame):
         '''Take a dataframe containing rows to be archived, and produce a csv file.'''
         data.to_csv(Transform.DATA_FOLDER_PATH, index=False)
+
+    @staticmethod
+    def get_primary_keys(data: pd.DataFrame):
+        '''Extract the primary keys (record_id) from the data. 
+        This will be used to remove the rows from the RDS'''
+        return data['record_id'].to_list()

@@ -19,7 +19,7 @@ class Load:
     DELETE_QUERY = "DELETE FROM record WHERE id IN (%s)"
 
     @staticmethod
-    def get_s3_client():
+    def _get_s3_client():
         '''Initialise an S3 client with boto.'''
         load_dotenv()
         s3 = boto3.client(
@@ -30,10 +30,9 @@ class Load:
         )
 
     @staticmethod
-    def upload_csv_to_bucket() -> bool:
-        '''Upload the archived data, in the csv to the specified S3 bucket. If the upload is
-        successful, then True is returned.'''
-        s3 = Load.get_s3_client()
+    def upload_csv_to_bucket():
+        '''Upload the archived data, in the csv to the specified S3 bucket.'''
+        s3 = Load._get_s3_client()
         current_date = datetime.now()
         key = f'{current_date.year}/{current_date.month}/{current_date.day}/{current_date.hour}.csv'
         s3.upload_file(Load.CSV_PATH, os.environ['S3_BUCKET'], key)
