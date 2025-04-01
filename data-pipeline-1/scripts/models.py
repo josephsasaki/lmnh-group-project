@@ -1,25 +1,22 @@
 from datetime import datetime
 
 
+class Botanist:
+    def __init__(self, botanist_dict_data: dict):
+        self.__email = botanist_dict_data.get("")
+
+
 class Record:
     """Record class which helps store incoming data from API"""
 
     def __init__(self, record_dict_data: dict):
         """Initialises the Record class"""
-        self.__plant_id = record_dict_data.get('plant_id')
         self.__soil_moisture = Record.clean_soil_moisture(
             record_dict_data.get('soil_moisture'))
         self.__temperature = Record.clean_temperature(
             record_dict_data.get('temperature'))
         self.__time = Record.clean_time(
             record_dict_data.get('recording_taken'))
-
-    @staticmethod
-    def clean_plant_id(plant_id_in: int) -> int:
-        if plant_id_in is None:
-            raise ValueError(f'Input data does not have a plant_id')
-
-        return plant_id_in
 
     @staticmethod
     def clean_soil_moisture(soil_moisture_in: float) -> float:
