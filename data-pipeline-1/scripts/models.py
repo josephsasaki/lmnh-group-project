@@ -3,7 +3,37 @@ from datetime import datetime
 
 class Botanist:
     def __init__(self, botanist_dict_data: dict):
-        self.__email = botanist_dict_data.get("")
+        self.__email = Botanist.clean_email(botanist_dict_data.get("email"))
+        self.__name = Botanist.clean_name(botanist_dict_data.get("name"))
+        self.__phone = Botanist.clean_phone(botanist_dict_data.get("phone"))
+
+    @staticmethod
+    def clean_email(email_in: str):
+        if email_in is None:
+            raise ValueError("Email value is not included in the input data")
+        if '@' not in email_in:
+            raise ValueError(
+                f"The email is not valid as it does'nt have an '@' symbol.")
+        return email_in
+
+    @staticmethod
+    def clean_name(name_in: str):
+        if name_in is None:
+            raise ValueError("Name value is not included in the input data")
+        return name_in
+
+    @staticmethod
+    def clean_phone(phone_in: str):
+        if phone_in is None:
+            raise ValueError("Phone value is not included in the input data")
+
+        phone_in = list(phone_in)
+        clean_phone = []
+        for char in phone_in:
+            if char.isnumeric():
+                clean_phone.append(char)
+
+        return ''.join(clean_phone)
 
 
 class Record:
@@ -53,7 +83,8 @@ class Record:
 
 
 class Plant:
-    def __init__(self, plant_dict_data: dict):
+    # plabnt should take in all data and make all th eobjects its needs and put themin an attribute itself.
+    def __init__(self, all_data: dict):
         self.__last_watered = Plant.clean_last_watered(
             plant_dict_data.get('last_watered'))
 
