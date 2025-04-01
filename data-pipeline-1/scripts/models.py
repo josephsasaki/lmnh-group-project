@@ -9,22 +9,22 @@ class Botanist:
         self.__phone = Botanist.clean_phone(botanist_dict_data.get("phone"))
 
     @staticmethod
-    def clean_email(email_in: str):
+    def clean_email(email_in: str) -> str:
         if email_in is None:
             raise ValueError("Email value is not included in the input data")
         if '@' not in email_in:
             raise ValueError(
-                f"The email is not valid as it does'nt have an '@' symbol.")
+                f"The email is not valid as it doesn't have an '@' symbol.")
         return email_in
 
     @staticmethod
-    def clean_name(name_in: str):
+    def clean_name(name_in: str) -> str:
         if name_in is None:
             raise ValueError("Name value is not included in the input data")
         return name_in
 
     @staticmethod
-    def clean_phone(phone_in: str):
+    def clean_phone(phone_in: str) -> str:
         if phone_in is None:
             raise ValueError("Phone value is not included in the input data")
 
@@ -52,7 +52,7 @@ class Location:
         self.__capital = capital
 
     @staticmethod
-    def convert_country_code_to_name(country_code_in: str):
+    def convert_country_code_to_name(country_code_in: str) -> str:
         if country_code_in is None:
             raise ValueError(
                 'The country code attribute is not included in the input data.')
@@ -63,14 +63,14 @@ class Location:
         return country
 
     @staticmethod
-    def clean_city_name(city_name_in: str):
+    def clean_city_name(city_name_in: str) -> str:
         if city_name_in is None:
             raise ValueError(
                 'The city name attribute is not included in the input data.')
         return city_name_in
 
     @staticmethod
-    def clean_latitude_longitude(coordinate_in: float):
+    def clean_latitude_longitude(coordinate_in: float) -> float:
         if coordinate_in is None:
             raise ValueError(
                 'The latitude or longitude attribute is not included in the input data.')
@@ -80,7 +80,7 @@ class Location:
         return coordinate_in
 
     @staticmethod
-    def clean_continent_capital(continent_capital_in: str):
+    def clean_continent_capital(continent_capital_in: str) -> tuple[str]:
         if continent_capital_in is None:
             return ValueError('The country and capital attribute is not included in the input data.')
         continent_capital_list = continent_capital_in.split('/')
@@ -89,6 +89,8 @@ class Location:
 
 class Record:
     """Record class which helps store incoming data from API"""
+    MAX_SOIL_MOISTURE = 100
+    MIN_SOIL_MOISTURE = 0
 
     def __init__(self, record_dict_data: dict):
         """Initialises the Record class"""
@@ -96,15 +98,15 @@ class Record:
             record_dict_data.get('soil_moisture'))
         self.__temperature = Record.clean_temperature(
             record_dict_data.get('temperature'))
-        self.__time = Record.clean_time(
+        self.__timestamp = Record.clean_time(
             record_dict_data.get('recording_taken'))
 
     @staticmethod
     def clean_soil_moisture(soil_moisture_in: float) -> float:
         if soil_moisture_in is None:
-            raise ValueError(f'Soil moisture not included in record data')
+            raise ValueError('Soil moisture not included in record data')
 
-        if soil_moisture_in > 100 or soil_moisture_in < 0:
+        if soil_moisture_in > Record.MAX_SOIL_MOISTURE or soil_moisture_in < Record.MIN_SOIL_MOISTURE:
             raise ValueError(
                 f'Soil moisture level of {soil_moisture_in} is not valid')
 
