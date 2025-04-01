@@ -14,7 +14,7 @@ class Botanist:
             raise ValueError("Email value is not included in the input data")
         if '@' not in email_in:
             raise ValueError(
-                f"The email is not valid as it does'nt have an '@' symbol.")
+                f"The email is not valid as it doesn't have an '@' symbol.")
         return email_in
 
     @staticmethod
