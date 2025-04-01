@@ -31,10 +31,10 @@ CREATE TABLE city (
 );
 
 CREATE TABLE plant_type (
-    plant_type_id SMALLINT PRIMARY KEY,
+    plant_type_id SMALLINT IDENTITY(1,1) PRIMARY KEY,
     plant_type_name VARCHAR(100) NOT NULL,
     plant_type_scientific_name VARCHAR(100),
-    plant_image_url VARCHAR(100)
+    plant_type_image_url VARCHAR(100)
 );
 
 CREATE TABLE botanist(
@@ -47,6 +47,7 @@ CREATE TABLE botanist(
 CREATE TABLE plant(
     plant_id SMALLINT IDENTITY(1,1) PRIMARY KEY,
     plant_type_id SMALLINT NOT NULL,
+    plant_number SMALLINT NOT NULL,
     botanist_id SMALLINT NOT NULL,
     city_id SMALLINT NOT NULL,
     plant_last_watered DATETIME,
@@ -63,7 +64,7 @@ CREATE TABLE record(
     record_id SMALLINT IDENTITY(1,1) PRIMARY KEY,
     record_soil_temperature FLOAT,
     record_temperature FLOAT,
-    record_time DATETIME NOT NULL,
+    record_timestamp DATETIME NOT NULL,
     plant_id SMALLINT NOT NULL,
     CONSTRAINT fk_record_plant_type FOREIGN KEY (plant_id) 
         REFERENCES plant (plant_id)
