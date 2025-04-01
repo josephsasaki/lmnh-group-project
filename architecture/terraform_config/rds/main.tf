@@ -8,15 +8,15 @@ terraform {
 }
 
 provider "aws" {
-  region = "eu-west-2"
+  region = var.REGION
 }
 
 data "aws_vpc" "c16_vpc" {
   id = "vpc-0f7ba8057a52dd82d"
 }
 
-resource "aws_security_group" "c16-sg-week13-lmnh-trenet" {
-  name        = "c16-sg-week13-lmnh-trenet"
+resource "aws_security_group" "c16-trenet-sg" {
+  name        = "c16-trenet-sg"
   description = "Sg for botanical db"
   vpc_id      = data.aws_vpc.c16_vpc.id
 
@@ -36,14 +36,14 @@ resource "aws_security_group" "c16-sg-week13-lmnh-trenet" {
     ipv6_cidr_blocks = ["::/0"]
   }
   tags = {
-    Name = "c16-sg-week13-lmnh-trenet"
+    Name = "c16-trenet-sg"
   }
 }
 
 
-resource "aws_db_instance" "c16-sg-week13-lmnh-trenet-rds" {
+resource "aws_db_instance" "c16-trenet-rds" {
   allocated_storage            = 20
-  identifier                   = "c16-sg-week13-lmnh-trenet-rds"
+  identifier                   = "c16-trenet-rds"
   engine                       = "sqlserver-ex"
   engine_version               = "16.00.4175.1.v1"
   instance_class               = "db.t3.micro"
@@ -51,7 +51,7 @@ resource "aws_db_instance" "c16-sg-week13-lmnh-trenet-rds" {
   performance_insights_enabled = false
   skip_final_snapshot          = true
   db_subnet_group_name         = "c16-public-subnet-group"
-  vpc_security_group_ids       = [aws_security_group.c16-sg-week13-lmnh-trenet.id]
+  vpc_security_group_ids       = [aws_security_group.c16-trenet-sg.id]
   username                     = var.DB_USERNAME
   password                     = var.DB_PASSWORD
 }
