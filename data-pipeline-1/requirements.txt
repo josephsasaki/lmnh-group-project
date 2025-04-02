@@ -1,2 +1,4 @@
 pandas
 pytest
+python-dotenv
+pyodbc
