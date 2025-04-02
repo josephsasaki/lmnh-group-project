@@ -84,10 +84,33 @@ class TestTransform:
 
     def test_list_with_multiple_responses(json_response_list):
         plant_list = Transform.create_plant_objects(json_response_list)
-        assert True == True
-        # assert len(plant_list) == 3
-        # assert plant_list[0]._Plant__botanist._Botanist__name == "Gertrude Jekyll"
-        # assert plant_list[1]._Plant__plant_type._PlantType__image_url == None
-        # assert plant_list[2]._Plant__last_watered.day == 1
-        # assert plant_list[2]._Plant__last_watered.month == 4
-        # assert plant_list[2]._Plant__last_watered.hour == 16
+        assert len(plant_list) == 3
+        assert plant_list[0]._Plant__botanist._Botanist__name == "Gertrude Jekyll"
+        assert plant_list[1]._Plant__plant_type._PlantType__image_url == None
+        assert plant_list[2]._Plant__last_watered.day == 1
+        assert plant_list[2]._Plant__last_watered.month == 4
+        assert plant_list[2]._Plant__last_watered.hour == 16
+
+    def test_list_one_response(json_response_list):
+        json_response_list = [json_response_list[0]]
+        plant_list = Transform.create_plant_objects(json_response_list)
+        assert len(plant_list) == 1
+        assert plant_list[0]._Plant__botanist._Botanist__name == "Gertrude Jekyll"
+        assert plant_list[0]._Plant__last_watered.day == 31
+        assert plant_list[0]._Plant__last_watered.month == 3
+        assert plant_list[0]._Plant__location._Location__continent == "America"
+        assert plant_list[0]._Plant__location._Location__country == "United States of America"
+
+    def test_empty_list():
+        plant_list = Transform.create_plant_objects([])
+        assert len(plant_list) == 0
+
+    def test_raise_error_plant_not_found(json_response_list):
+        json_response_list.append(
+            {
+                "error": "plant not found",
+                "plant_id": 100
+            }
+        )
+        with pytest.raises(ValueError):
+            plant_list = Transform.create_plant_objects(json_response_list)
