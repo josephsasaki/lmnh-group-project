@@ -4,10 +4,10 @@
     It specifically extracts data outside a 24 hour window from the current time.
 '''
 
-import os
+from os import environ as ENV
 import datetime as datetime
 import pandas as pd
-import pymysql
+import pyodbc
 from dotenv import load_dotenv
 
 
@@ -15,37 +15,49 @@ class Extract:
     '''A static class from which extract methods are called.'''
 
     QUERY = '''
-        WITH outside_24_hour AS (
+    WITH outside_24_hour AS (
             SELECT * FROM record
-            WHERE record_taken < NOW() - INTERVAL 24 HOUR
-        )
-        SELECT 
-            o24h.record_id,
-            p.plant_number, 
-            o24h.soil_moisture, 
-            o24h.temperature,
-            o24h.record_taken
-        FROM outside_24_hour AS o24h
-        JOIN plant AS p ON p.plant_id = o24h.plant_id
-        JOIN plant_type AS pt ON pt.plant_type_id = p.plant_type_id
-        JOIN botanist AS b ON b.botanist_id = p.botanist_id
-        JOIN city AS cit ON cit.city_id = p.city_id
-        JOIN country AS cou ON cou.country_id = cit.country_id
-        JOIN continent AS con ON con.continent_id = cou.continent_id
+            WHERE record_timestamp < DATEADD(hour, -24, CONVERT(datetime, SYSDATETIMEOFFSET() AT TIME ZONE 'GMT Standard Time'))
+    )
+    SELECT 
+        p.plant_number,
+        p.plant_last_watered,
+        o24h.record_soil_moisture, 
+        o24h.record_temperature,
+        o24h.record_timestamp,
+        pt.plant_type_name,
+        pt.plant_type_scientific_name,
+        pt.plant_type_image_url,
+        b.botanist_name,
+        b.botanist_email,
+        b.botanist_phone,
+        cit.city_name,
+        cit.city_latitude,
+        cit.city_longitude,
+        cou.country_name,
+        cou.country_capital,
+        con.continent_name
+    FROM outside_24_hour AS o24h
+    JOIN plant AS p ON p.plant_id = o24h.plant_id
+    JOIN plant_type AS pt ON pt.plant_type_id = p.plant_type_id
+    JOIN botanist AS b ON b.botanist_id = p.botanist_id
+    JOIN city AS cit ON cit.city_id = p.city_id
+    JOIN country AS cou ON cou.country_id = cit.country_id
+    JOIN continent AS con ON con.continent_id = cou.continent_id
     '''
 
     @staticmethod
-    def _get_connection():
+    def _get_connection() -> pyodbc.Connection:
         '''Get the connection to the RDS, using credentials from the .env file.'''
         load_dotenv()
-        return pymysql.connect(
-            host=os.environ['DB_HOST'],
-            user=os.environ['DB_USER'],
-            password=os.environ['DB_PASSWORD'],
-            database=os.environ['DB_NAME'],
-        )
+        conn_str = (f"DRIVER={{{ENV['DB_DRIVER']}}};SERVER={ENV['DB_HOST']};"
+                    f"PORT={ENV['DB_PORT']};DATABASE={ENV['DB_NAME']};"
+                    f"UID={ENV['DB_USERNAME']};PWD={ENV['DB_PASSWORD']};Encrypt=no;")
+        conn = pyodbc.connect(conn_str)
+        return conn
 
-    def extract_data_to_be_archived(self) -> pd.DataFrame:
+    @staticmethod
+    def extract_data_to_be_archived() -> pd.DataFrame:
         '''Extract the rows from the RDS which are outside the 24 hour window.'''
         with Extract._get_connection() as connection:
             return pd.read_sql(Extract.QUERY, connection)
