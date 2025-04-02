@@ -1,5 +1,5 @@
 import pytest
-from scripts.models import Botanist, Location, Recording, PlantType, Plant
+from models import Botanist, Location, Recording, PlantType, Plant
 
 
 FULL_RAW_JSON = {
@@ -48,13 +48,34 @@ class TestBotanist:
         assert botanist._Botanist__name == "Test Test"
         assert botanist._Botanist__phone == "001-481-273-3691x127"
 
+    def test_botanist_not_dict(self):
+        raw_json = [
+            "test.test@lmnh.com",
+            "Test Test",
+            "001-481-273-3691x127",
+        ]
+        with pytest.raises(ValueError):
+            Botanist(raw_json)
+
+    def test_botanist_get_values(self):
+        raw_json = {
+            "email": "test.test@lmnh.com",
+            "name": "Test Test",
+            "phone": "001-481-273-3691x127"
+        }
+        botanist = Botanist(raw_json)
+        values = botanist.get_values()
+        assert values[0] == "Test Test"
+        assert values[1] == "test.test@lmnh.com"
+        assert values[2] == "001-481-273-3691x127"
+
     def test_botanist_missing_email(self):
         raw_json = {
             "name": "Test Test",
             "phone": "001-481-273-3691x127"
         }
         with pytest.raises(ValueError):
-            botanist = Botanist(raw_json)
+            Botanist(raw_json)
 
     def test_botanist_missing_name(self):
         raw_json = {
@@ -62,7 +83,7 @@ class TestBotanist:
             "phone": "001-481-273-3691x127"
         }
         with pytest.raises(ValueError):
-            botanist = Botanist(raw_json)
+            Botanist(raw_json)
 
     def test_botanist_missing_phone(self):
         raw_json = {
@@ -70,7 +91,7 @@ class TestBotanist:
             "email": "test.test@lmnh.com",
         }
         with pytest.raises(ValueError):
-            botanist = Botanist(raw_json)
+            Botanist(raw_json)
 
     def test_botanist_invalid_email(self):
         raw_json = {
@@ -79,7 +100,7 @@ class TestBotanist:
             "phone": "001-481-273-3691x127",
         }
         with pytest.raises(ValueError):
-            botanist = Botanist(raw_json)
+            Botanist(raw_json)
 
     def test_botanist_invalid_name(self):
         raw_json = {
@@ -88,7 +109,7 @@ class TestBotanist:
             "phone": "001-481-273-3691x127",
         }
         with pytest.raises(ValueError):
-            botanist = Botanist(raw_json)
+            Botanist(raw_json)
 
     def test_botanist_invalid_phone(self):
         raw_json = {
@@ -97,7 +118,7 @@ class TestBotanist:
             "phone": "5739",
         }
         with pytest.raises(ValueError):
-            botanist = Botanist(raw_json)
+            Botanist(raw_json)
 
 
 class TestLocation:
@@ -200,14 +221,14 @@ class TestRecord:
             "recording_taken": "2025-04-01 07:38:10",
         }
         record = Recording(raw_json)
-        assert record._Record__soil_moisture == 34.68
-        assert record._Record__temperature == 11.54
-        assert record._Record__taken.year == 2025
-        assert record._Record__taken.month == 4
-        assert record._Record__taken.day == 1
-        assert record._Record__taken.hour == 7
-        assert record._Record__taken.minute == 38
-        assert record._Record__taken.second == 10
+        assert record._Recording__soil_moisture == 34.68
+        assert record._Recording__temperature == 11.54
+        assert record._Recording__taken.year == 2025
+        assert record._Recording__taken.month == 4
+        assert record._Recording__taken.day == 1
+        assert record._Recording__taken.hour == 7
+        assert record._Recording__taken.minute == 38
+        assert record._Recording__taken.second == 10
 
     def test_record_missing_soil_moisture(self):
         raw_json = {
@@ -342,14 +363,14 @@ class TestPlant():
     def test_plant_init_record(self):
         raw_json = FULL_RAW_JSON
         plant = Plant(raw_json)
-        assert plant._Plant__record._Record__soil_moisture == 34.68
-        assert plant._Plant__record._Record__temperature == 11.54
-        assert plant._Plant__record._Record__taken.year == 2025
-        assert plant._Plant__record._Record__taken.month == 4
-        assert plant._Plant__record._Record__taken.day == 1
-        assert plant._Plant__record._Record__taken.hour == 7
-        assert plant._Plant__record._Record__taken.minute == 38
-        assert plant._Plant__record._Record__taken.second == 10
+        assert plant._Plant__record._Recording__soil_moisture == 34.68
+        assert plant._Plant__record._Recording__temperature == 11.54
+        assert plant._Plant__record._Recording__taken.year == 2025
+        assert plant._Plant__record._Recording__taken.month == 4
+        assert plant._Plant__record._Recording__taken.day == 1
+        assert plant._Plant__record._Recording__taken.hour == 7
+        assert plant._Plant__record._Recording__taken.minute == 38
+        assert plant._Plant__record._Recording__taken.second == 10
 
     def test_plant_init_plant_type(self):
         raw_json = FULL_RAW_JSON
