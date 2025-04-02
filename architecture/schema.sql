@@ -61,7 +61,7 @@ CREATE TABLE plant(
 
 CREATE TABLE record(
     record_id SMALLINT IDENTITY(1,1) PRIMARY KEY,
-    record_soil_temperature FLOAT,
+    record_soil_moisture FLOAT,
     record_temperature FLOAT,
     record_timestamp DATETIME NOT NULL,
     plant_id SMALLINT NOT NULL,
