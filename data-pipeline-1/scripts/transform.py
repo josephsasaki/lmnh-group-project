@@ -13,6 +13,10 @@ class Transform:
         """Creates a list of Plant objects, one object for each json response"""
         plant_list = []
         for response in plant_responses:
-            plant_list.append(Plant(response))
+            try:
+                plant = Plant(response)
+                plant_list.append(plant)
+            except ValueError:
+                continue
 
         return plant_list

@@ -78,6 +78,11 @@ class Load:
             INSERT (plant_type_id, plant_number, botanist_id, city_id, plant_last_watered)
             VALUES (source.plant_type_id, source.plant_number, source.botanist_id, source.city_id, source.plant_last_watered);
     '''
+    RECORD_INSERT = '''
+        INSERT INTO record (plant_id, record_soil_moisture, record_temperature, record_timestamp)
+        SELECT plant_id, ?, ?, ? FROM plant
+        WHERE plant_number = ?;
+    '''
 
     @staticmethod
     def get_connection():
@@ -90,46 +95,37 @@ class Load:
         return conn
 
     @staticmethod
-    def add_new_continents(locations: list[Location], connection):
-        with connection.cursor() as cursor:
-            for location in locations:
-                cursor.execute(Load.CONTINENT_UPSERT,
-                               location.get_continent_values())
-                cursor.commit()
+    def add_new_continents(locations: list[Location], cursor: pyodbc.Cursor):
+        values = [location.get_continent_values() for location in locations]
+        cursor.executemany(Load.CONTINENT_UPSERT, values)
 
     @staticmethod
-    def add_new_countries(locations: list[Location], connection):
-        with connection.cursor() as cursor:
-            for location in locations:
-                cursor.execute(Load.COUNTRY_UPSERT,
-                               location.get_country_values())
-                cursor.commit()
+    def add_new_countries(locations: list[Location], cursor: pyodbc.Cursor):
+        values = [location.get_country_values() for location in locations]
+        cursor.executemany(Load.COUNTRY_UPSERT, values)
 
     @staticmethod
-    def add_new_cities(locations: list[Location], connection):
-        with connection.cursor() as cursor:
-            for location in locations:
-                cursor.execute(Load.CITY_UPSERT, location.get_city_values())
-                cursor.commit()
+    def add_new_cities(locations: list[Location], cursor: pyodbc.Cursor):
+        values = [location.get_city_values() for location in locations]
+        cursor.executemany(Load.CITY_UPSERT, values)
 
     @staticmethod
-    def add_new_botanists(botanists: list[Botanist], connection):
-        with connection.cursor() as cursor:
-            for botanist in botanists:
-                cursor.execute(Load.BOTANIST_UPSERT, botanist.get_values())
-                cursor.commit()
+    def add_new_botanists(botanists: list[Botanist], cursor: pyodbc.Cursor):
+        values = [botanist.get_values() for botanist in botanists]
+        cursor.executemany(Load.BOTANIST_UPSERT, values)
 
     @staticmethod
-    def add_new_plant_type(plant_types: list[PlantType], connection):
-        with connection.cursor() as cursor:
-            for plant_type in plant_types:
-                cursor.execute(Load.PLANT_TYPE_UPSERT, plant_type.get_values())
-                cursor.commit()
+    def add_new_plant_type(plant_types: list[PlantType], cursor: pyodbc.Cursor):
+        values = [plant_type.get_values() for plant_type in plant_types]
+        cursor.executemany(Load.PLANT_TYPE_UPSERT, values)
 
     @staticmethod
-    def add_new_plants(plants: list[Plant], connection):
+    def add_new_plants(plants: list[Plant], cursor: pyodbc.Cursor):
         '''Insert plants only if plant_number doesn't exist, update last_watered if it does.'''
-        with connection.cursor() as cursor:
-            for plant in plants:
-                cursor.execute(Load.PLANT_UPSERT, plant.get_values())
-                cursor.commit()
+        values = [plant.get_values() for plant in plants]
+        cursor.executemany(Load.PLANT_UPSERT, values)
+
+    @staticmethod
+    def add_new_records(plants: list[Plant], cursor: pyodbc.Cursor):
+        values = [plant.get_record_values() for plant in plants]
+        cursor.executemany(Load.RECORD_INSERT, values)

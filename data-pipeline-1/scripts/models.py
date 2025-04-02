@@ -140,7 +140,7 @@ class Location:
 class Record:
     """Record class which helps store incoming data from API"""
     MAX_SOIL_MOISTURE = 100
-    MIN_SOIL_MOISTURE = -10
+    MIN_SOIL_MOISTURE = 0
 
     def __init__(self, record_dict_data: dict) -> None:
         """Initialises the Record class"""
@@ -150,6 +150,9 @@ class Record:
             record_dict_data.get('temperature'))
         self.__taken = Record.clean_taken_time(
             record_dict_data.get('recording_taken'))
+
+    def get_values(self):
+        return self.__soil_moisture, self.__temperature, self.__taken
 
     @staticmethod
     def clean_soil_moisture(soil_moisture_in: float) -> float:
@@ -265,6 +268,12 @@ class Plant:
             self.__botanist.get_values()[0],
             self.__location.get_city_values()[0],
             self.__last_watered,
+        )
+
+    def get_record_values(self) -> tuple[str]:
+        return (
+            *self.__record.get_values(),
+            self.__plant_number,
         )
 
     @staticmethod
