@@ -7,7 +7,7 @@ provider "aws" {
 ## ECR
 
 data "aws_ecr_repository" "c16-trenet-pipeline" {
-  name = var.PIPELINE_NAME
+  name = var.PIPELINE1_ECR
 }
 
 data "aws_ecr_image" "lambda-image-pipeline" {
@@ -16,7 +16,7 @@ data "aws_ecr_image" "lambda-image-pipeline" {
 }
 
 data "aws_ecr_repository" "c16-trenet-pipeline2" {
-  name = var.PIPELINE2_NAME
+  name = var.PIPELINE2_ECR
 }
 
 data "aws_ecr_image" "lambda-image-pipeline2" {
@@ -57,13 +57,13 @@ data "aws_iam_policy_document" "lambda-role-permissions-policy-doc" {
 
 # Role
 resource "aws_iam_role" "lambda-role" {
-    name = "c16-tenet-lambda-pipeline-role"
+    name = "c16-tenet-lambda-pipelines-role"
     assume_role_policy = data.aws_iam_policy_document.lambda-role-trust-policy-doc.json
 }
 
 # Permissions policy
 resource "aws_iam_policy" "lambda-role-permissions-policy" {
-    name = "c16-trenet-lambda-pipeline-permissions-policy"
+    name = "c16-trenet-lambda-pipelines-permissions-policy"
     policy = data.aws_iam_policy_document.lambda-role-permissions-policy-doc.json
 }
 
