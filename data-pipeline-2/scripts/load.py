@@ -5,7 +5,7 @@
 '''
 
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 import boto3
 from dotenv import load_dotenv
 from extract import Extract
@@ -30,18 +30,27 @@ class Load:
         )
 
     @staticmethod
+    def get_bucket_key() -> str:
+        # storing the previous days data so timedelta is -1 day
+        yesterday_date = datetime.now()-timedelta(days=1)
+        return f'{yesterday_date.year}/{yesterday_date.month}/{yesterday_date.day}/{yesterday_date.hour}.csv'
+
+    @staticmethod
     def upload_csv_to_bucket():
         '''Upload the archived data, in the csv to the specified S3 bucket.'''
         s3 = Load._get_s3_client()
-        current_date = datetime.now()
-        key = f'{current_date.year}/{current_date.month}/{current_date.day}/{current_date.hour}.csv'
+        key = Load.get_bucket_key()
         s3.upload_file(Load.CSV_PATH, os.environ['S3_BUCKET'], key)
 
     @staticmethod
     def remove_rows_from_rds(record_ids: list[int]):
-        with Extract.get_connection() as connection:
+        with Extract._get_connection() as connection:
             with connection.cursor() as cursor:
                 format_strings = ",".join(["%s"] * len(record_ids))
                 delete_query = Load.DELETE_QUERY.format(format_strings)
                 cursor.execute(delete_query, record_ids)
                 connection.commit()
+
+
+if __name__ == '__main__':
+    print(datetime.now()-timedelta(days=1))
