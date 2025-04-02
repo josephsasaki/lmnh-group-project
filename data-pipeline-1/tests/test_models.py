@@ -1,5 +1,5 @@
 import pytest
-from scripts.models import Botanist, Location, Record, PlantType, Plant
+from scripts.models import Botanist, Location, Recording, PlantType, Plant
 
 
 FULL_RAW_JSON = {
@@ -199,7 +199,7 @@ class TestRecord:
             "temperature": 11.541849271315279,
             "recording_taken": "2025-04-01 07:38:10",
         }
-        record = Record(raw_json)
+        record = Recording(raw_json)
         assert record._Record__soil_moisture == 34.68
         assert record._Record__temperature == 11.54
         assert record._Record__taken.year == 2025
@@ -216,7 +216,7 @@ class TestRecord:
             "recording_taken": "2025-04-01 07:38:10",
         }
         with pytest.raises(ValueError):
-            record = Record(raw_json)
+            record = Recording(raw_json)
 
     def test_record_missing_soil_moisture(self):
         raw_json = {
@@ -224,7 +224,7 @@ class TestRecord:
             "recording_taken": "2025-04-01 07:38:10",
         }
         with pytest.raises(ValueError):
-            record = Record(raw_json)
+            record = Recording(raw_json)
 
     def test_record_missing_temperature(self):
         raw_json = {
@@ -232,7 +232,7 @@ class TestRecord:
             "recording_taken": "2025-04-01 07:38:10",
         }
         with pytest.raises(ValueError):
-            record = Record(raw_json)
+            record = Recording(raw_json)
 
     def test_record_missing_recording_taken(self):
         raw_json = {
@@ -240,7 +240,7 @@ class TestRecord:
             "temperature": 11.541849271315279,
         }
         with pytest.raises(ValueError):
-            record = Record(raw_json)
+            record = Recording(raw_json)
 
     def test_record_invalid_soil_moisture(self):
         raw_json = {
@@ -249,7 +249,7 @@ class TestRecord:
             "recording_taken": "2025-04-01 07:38:10",
         }
         with pytest.raises(ValueError):
-            record = Record(raw_json)
+            record = Recording(raw_json)
 
 
 class TestPlantType:

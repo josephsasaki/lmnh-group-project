@@ -7,8 +7,8 @@ import requests
 import multiprocessing as mp
 
 
-class PlantAPIExtractor:
-    '''The APIExtractor class extracts data from the plants API across all specified plant ids.'''
+class RecordingAPIExtractor:
+    '''The APIExtractor class extracts data recorded from the plants API across all specified plant ids.'''
 
     def __init__(self, api_url: str, min_plant_id: int = 1, max_plant_id: int = 55):
         '''The minimum and maximum values represent the range of plant ids checked to have data.'''

@@ -6,7 +6,7 @@
 from models import Plant
 
 
-class PlantFactory:
+class PlantRecordingFactory:
     '''Class which takes a list of json objects containing plant data and transforms them into
     a list of actual plant objects.'''
 

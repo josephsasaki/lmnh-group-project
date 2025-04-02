@@ -82,7 +82,7 @@ class DatabaseManager:
             INSERT (plant_type_id, plant_number, botanist_id, city_id, plant_last_watered)
             VALUES (source.plant_type_id, source.plant_number, source.botanist_id, source.city_id, source.plant_last_watered);
     '''
-    RECORD_INSERT = '''
+    RECORDING_INSERT = '''
         INSERT INTO record (plant_id, record_soil_moisture, record_temperature, record_timestamp)
         SELECT plant_id, ?, ?, ? FROM plant
         WHERE plant_number = ?;
@@ -142,11 +142,11 @@ class DatabaseManager:
         plant_values = [plant.get_values() for plant in self.plants]
         self.cursor.executemany(self.PLANT_UPSERT, plant_values)
 
-    def _add_new_records(self):
-        '''Insert the new records to the database. 
+    def _add_new_recordings(self):
+        '''Insert the new recordingss to the database. 
         Note, the cursor commits must be done externally.'''
-        record_values = [plant.get_record_values() for plant in self.plants]
-        self.cursor.executemany(self.RECORD_INSERT, record_values)
+        recording_values = [plant.get_record_values() for plant in self.plants]
+        self.cursor.executemany(self.RECORDING_INSERT, recording_values)
 
     def load_all(self) -> None:
         '''Connect to the database and load the plant data passed at instantiation.'''
@@ -157,7 +157,7 @@ class DatabaseManager:
                 self._add_new_locations()
                 self._add_new_plant_type()
                 self._add_new_plants()
-                self._add_new_records()
+                self._add_new_recordings()
                 # commit all changes to database
                 self.cursor.commit()
         except:
