@@ -1,8 +1,8 @@
 resource "aws_s3_bucket" "c16_trenet_s3" {
-  bucket = "c16-trenet-s3"
+  bucket = var.BUCKET_NAME
 
   tags = {
-    Name = "c16-trenet-s3"
+    Name = var.BUCKET_NAME
   }
 }
 
