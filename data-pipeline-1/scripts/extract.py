@@ -19,7 +19,7 @@ class Extract:
         return None
 
     @staticmethod
-    def extract():
+    def extract_api_data():
         '''Extract the endpoint data for all ids in the specified range.'''
         plant_ids = list(range(Extract.MIN_PLANT_ID, Extract.MAX_PLANT_ID+1))
         with mp.Pool(mp.cpu_count()) as p:

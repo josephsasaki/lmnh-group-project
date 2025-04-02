@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 import re
 import pandas as pd
@@ -74,12 +75,20 @@ class Location:
         self.__continent = continent
         self.__capital = capital
 
+    def get_continent_values(self) -> tuple[str]:
+        return (self.__continent,)
+
+    def get_country_values(self) -> tuple[str]:
+        return (self.__country, self.__capital, self.__continent)
+
+    def get_city_values(self) -> tuple[str]:
+        return (self.__city, self.__latitude, self.__longitude, self.__country)
+
     @staticmethod
     def convert_location_data_to_dict(location_data_in: list) -> dict:
         if len(location_data_in) != Location.COUNT_OF_LOCATION_ATTRIBUTES:
             raise ValueError(
                 f"There should be {Location.COUNT_OF_LOCATION_ATTRIBUTES} values in the location data, instead there is {len(location_data_in)}")
-
         return {
             "latitude": location_data_in[0],
             "longitude": location_data_in[1],
@@ -93,7 +102,10 @@ class Location:
         if country_code_in is None:
             raise ValueError(
                 'The country code attribute is not included in the input data.')
-        df_country = pd.read_csv('../country_code_data/code_to_name.csv')
+        script_dir = os.path.dirname(os.path.realpath(__file__))
+        file_path = os.path.join(
+            script_dir, './../country_code_data/code_to_name.csv')
+        df_country = pd.read_csv(file_path)
         df_country = df_country[df_country['alpha-2']
                                 == country_code_in.upper()]
         country = df_country['name'].iloc[0]
@@ -139,6 +151,9 @@ class Record:
         self.__taken = Record.clean_taken_time(
             record_dict_data.get('recording_taken'))
 
+    def get_values(self):
+        return self.__soil_moisture, self.__temperature, self.__taken
+
     @staticmethod
     def clean_soil_moisture(soil_moisture_in: float) -> float:
         if soil_moisture_in is None:
@@ -181,6 +196,9 @@ class PlantType:
             plant_type_dict_data.get('scientific_name'))
         self.__image_url = PlantType.clean_image_url(
             plant_type_dict_data.get('images'))
+
+    def get_values(self) -> tuple[str]:
+        return (self.__name, self.__scientific_name, self.__image_url)
 
     @staticmethod
     def clean_plant_type_name(plant_type_name_in: str) -> str:
@@ -235,8 +253,28 @@ class Plant:
         })
 
     def get_botanist(self) -> Botanist:
-        '''Getter for the plant's botanist.'''
         return self.__botanist
+
+    def get_location(self) -> Location:
+        return self.__location
+
+    def get_plant_type(self) -> PlantType:
+        return self.__plant_type
+
+    def get_values(self) -> tuple[str]:
+        return (
+            self.__plant_number,
+            self.__plant_type.get_values()[0],
+            self.__botanist.get_values()[0],
+            self.__location.get_city_values()[0],
+            self.__last_watered,
+        )
+
+    def get_record_values(self) -> tuple[str]:
+        return (
+            *self.__record.get_values(),
+            self.__plant_number,
+        )
 
     @staticmethod
     def clean_plant_number(plant_number_in: int) -> int:

@@ -3,7 +3,7 @@
 from os import environ as ENV
 from dotenv import load_dotenv
 import pyodbc
-from models import Plant, Botanist, Location
+from models import Plant, Botanist, Location, PlantType
 
 
 class Load:
@@ -57,12 +57,31 @@ class Load:
         MERGE INTO plant_type AS target
         USING (SELECT ? AS plant_type_name, ? AS plant_type_scientific_name, ? AS plant_type_image_url) AS SOURCE
         ON target.plant_type_name = source.plant_type_name
-            AND target.plant_type_name = source.plant_type_name
-            AND target.plant_type_scientific_name = source.plant_type_scientific_name
-            AND target.plant_type_image_url = source.plant_type_image_url
         WHEN NOT MATCHED THEN
             INSERT (plant_type_name, plant_type_scientific_name, plant_type_image_url)
             VALUES (source.plant_type_name, source.plant_type_scientific_name, source.plant_type_image_url);
+    '''
+    PLANT_UPSERT = '''
+        MERGE INTO plant AS target
+        USING (
+            SELECT 
+                ? AS plant_number, 
+                (SELECT plant_type_id FROM plant_type WHERE plant_type_name = ?) AS plant_type_id, 
+                (SELECT botanist_id FROM botanist WHERE botanist_name = ?) AS botanist_id,
+                (SELECT city_id FROM city WHERE city_name = ?) AS city_id,
+                ? AS plant_last_watered
+        ) AS source
+        ON target.plant_number = source.plant_number
+        WHEN MATCHED THEN
+            UPDATE SET target.plant_last_watered = source.plant_last_watered
+        WHEN NOT MATCHED THEN
+            INSERT (plant_type_id, plant_number, botanist_id, city_id, plant_last_watered)
+            VALUES (source.plant_type_id, source.plant_number, source.botanist_id, source.city_id, source.plant_last_watered);
+    '''
+    RECORD_INSERT = '''
+        INSERT INTO record (plant_id, record_soil_moisture, record_temperature, record_timestamp)
+        SELECT plant_id, ?, ?, ? FROM plant
+        WHERE plant_number = ?;
     '''
 
     @staticmethod
@@ -76,48 +95,37 @@ class Load:
         return conn
 
     @staticmethod
-    def add_new_continents(locations: list[Location], connection):
-        with connection.cursor() as cursor:
-            for location in locations:
-                cursor.execute(Load.CONTINENT_UPSERT,
-                               location.get_continent_values())
-                cursor.commit()
+    def add_new_continents(locations: list[Location], cursor: pyodbc.Cursor):
+        values = [location.get_continent_values() for location in locations]
+        cursor.executemany(Load.CONTINENT_UPSERT, values)
 
     @staticmethod
-    def add_new_countries(locations: list[Location], connection):
-        with connection.cursor() as cursor:
-            for location in locations:
-                cursor.execute(Load.COUNTRY_UPSERT,
-                               location.get_country_values())
-                cursor.commit()
+    def add_new_countries(locations: list[Location], cursor: pyodbc.Cursor):
+        values = [location.get_country_values() for location in locations]
+        cursor.executemany(Load.COUNTRY_UPSERT, values)
 
     @staticmethod
-    def add_new_cities(locations: list[Location], connection):
-        with connection.cursor() as cursor:
-            for location in locations:
-                cursor.execute(Load.CITY_UPSERT, location.get_city_values())
-                cursor.commit()
+    def add_new_cities(locations: list[Location], cursor: pyodbc.Cursor):
+        values = [location.get_city_values() for location in locations]
+        cursor.executemany(Load.CITY_UPSERT, values)
 
     @staticmethod
-    def add_new_botanists(botanists: list[Botanist], connection):
-        with connection.cursor() as cursor:
-            for botanist in botanists:
-                cursor.execute(Load.TEST, botanist.get_values())
-                cursor.commit()
+    def add_new_botanists(botanists: list[Botanist], cursor: pyodbc.Cursor):
+        values = [botanist.get_values() for botanist in botanists]
+        cursor.executemany(Load.BOTANIST_UPSERT, values)
 
+    @staticmethod
+    def add_new_plant_type(plant_types: list[PlantType], cursor: pyodbc.Cursor):
+        values = [plant_type.get_values() for plant_type in plant_types]
+        cursor.executemany(Load.PLANT_TYPE_UPSERT, values)
 
-if __name__ == "__main__":
-    connection = Load.get_connection()
-    try:
-        botanists = [
-            Botanist({"name": "Testing", "email": "test.test@test.com",
-                      "phone": "001-481-273-3691x127"}),
-            Botanist({"name": "Joe", "email": "Joe.s@test.com",
-                      "phone": "001-481-273-3691x128"}),
-        ]
-        Load.add_new_botanists(botanists, connection)
-    except Exception as e:
-        print("here??/")
-        raise (e)
-    finally:
-        connection.close()
+    @staticmethod
+    def add_new_plants(plants: list[Plant], cursor: pyodbc.Cursor):
+        '''Insert plants only if plant_number doesn't exist, update last_watered if it does.'''
+        values = [plant.get_values() for plant in plants]
+        cursor.executemany(Load.PLANT_UPSERT, values)
+
+    @staticmethod
+    def add_new_records(plants: list[Plant], cursor: pyodbc.Cursor):
+        values = [plant.get_record_values() for plant in plants]
+        cursor.executemany(Load.RECORD_INSERT, values)
