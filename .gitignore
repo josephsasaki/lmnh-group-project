@@ -181,4 +181,4 @@ terraform.tfstate.backup
 terraform*
 *.pem
 *.pemkey
-architecture/terraform_config/rds/.terraform/
+terraform.tfvars
