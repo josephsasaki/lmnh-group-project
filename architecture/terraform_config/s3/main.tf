@@ -1,3 +1,17 @@
+terraform {
+  required_providers {
+    aws = {
+      source = "hashicorp/aws"
+      version = "5.89.0"
+    }
+  }
+}
+
+provider "aws" {
+  region = var.REGION
+}
+
+
 resource "aws_s3_bucket" "c16_trenet_s3" {
   bucket = var.BUCKET_NAME
 
