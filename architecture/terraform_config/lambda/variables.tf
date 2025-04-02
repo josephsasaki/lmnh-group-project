@@ -38,3 +38,16 @@ variable "LAMBDA_NAME1" {
 variable "LAMBDA_NAME2" {
   type = string
 }
+
+variable "DB_PORT" {
+  type = number
+}
+
+variable "DB_NAME" {
+  type = string
+}
+
+variable "DB_DRIVER" {
+  type = string
+}
+

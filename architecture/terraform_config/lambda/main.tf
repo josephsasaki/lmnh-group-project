@@ -57,13 +57,13 @@ data "aws_iam_policy_document" "lambda-role-permissions-policy-doc" {
 
 # Role
 resource "aws_iam_role" "lambda-role" {
-    name = "c16-tenet-lambda-pipeline-role"
+    name = "c16-tenet-lambda-pipelines-role"
     assume_role_policy = data.aws_iam_policy_document.lambda-role-trust-policy-doc.json
 }
 
 # Permissions policy
 resource "aws_iam_policy" "lambda-role-permissions-policy" {
-    name = "c16-trenet-lambda-pipeline-permissions-policy"
+    name = "c16-trenet-lambda-pipeline-permission-policy"
     policy = data.aws_iam_policy_document.lambda-role-permissions-policy-doc.json
 }
 
@@ -83,6 +83,9 @@ resource "aws_lambda_function" "c16-trenet-lambda-pipeline1" {
     variables = {
          DB_USER = var.DB_USERNAME
          DB_PASSWORD = var.DB_PASSWORD
+         DB_PORT = var.DB_PORT
+         DB_NAME = var.DB_NAME
+         DB_DRIVER = var.DB_DRIVER
     }
   }
 }
@@ -97,6 +100,9 @@ resource "aws_lambda_function" "c16-trenet-lambda-pipeline2" {
     variables = {
          DB_USER = var.DB_USERNAME
          DB_PASSWORD = var.DB_PASSWORD
+         DB_PORT = var.DB_PORT
+         DB_NAME = var.DB_NAME
+         DB_DRIVER = var.DB_DRIVER
     }
   }
 }
