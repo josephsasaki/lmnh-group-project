@@ -20,6 +20,7 @@ class Extract:
             WHERE record_timestamp < DATEADD(hour, -24, CONVERT(datetime, SYSDATETIMEOFFSET() AT TIME ZONE 'GMT Standard Time'))
     )
     SELECT 
+        o24h.record_id,
         p.plant_number,
         p.plant_last_watered,
         o24h.record_soil_moisture, 
