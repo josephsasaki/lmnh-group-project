@@ -178,7 +178,7 @@ cython_debug/
 terraform.tfstate
 terraform.tfstate.backup
 .venv
-terraform*
+terraform.*
 *.pem
 *.pemkey
 terraform.tfvars
