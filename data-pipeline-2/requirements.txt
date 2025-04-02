@@ -1,0 +1,4 @@
+pandas
+pymysql
+python-dotenv
+boto3
