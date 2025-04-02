@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     aws = {
-      source = "hashicorp/aws"
+      source  = "hashicorp/aws"
       version = "5.89.0"
     }
   }
@@ -15,19 +15,45 @@ data "aws_vpc" "c16_vpc" {
   id = var.VPC_ID
 }
 
-resource "aws_ecs_service_definition" "c16-trenet-service-ecs" {
-  family                   = var.ECS_SERVICE
+resource "aws_security_group" "c16-trenet-ecs-sg" {
+  name        = var.SG_NAME
+  description = "Sg for sql server rds"
+  vpc_id      = data.aws_vpc.c16_vpc.id
+
+  ingress {
+    from_port        = 1433
+    to_port          = 1433
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = -1
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+  tags = {
+    Name = var.SG_NAME
+  }
+}
+
+resource "aws_ecs_task_definition" "c16-trenet-task" {
+  family                   = var.ECS_TASK_DEF
   network_mode             = "awsvpc"
-  requires_compatibilities = ["FARGATE"]  # Adjust based on your ECS launch type
-  cpu                      = 512  # 0.5 vCPU at the task level
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = 512
   memory                   = 1024
-  execution_role_arn = var.execution_role_arn
+  execution_role_arn       = var.EXECUTION_ROLE_ARN
+
   container_definitions = jsonencode([
     {
       name      = var.DASHBOARD_ECR
-      image     = var.DASHBOARD_ECR_IMAGE 
-      cpu       = 512  # 0.5 vCPU (AWS ECS uses 1024 CPU units = 1 vCPU)
-      memory    = 1024  # 1GB RAM
+      image     = var.DASHBOARD_ECR_IMAGE
+      cpu       = 512
+      memory    = 1024
       essential = true
       portMappings = [
         {
@@ -36,7 +62,7 @@ resource "aws_ecs_service_definition" "c16-trenet-service-ecs" {
           protocol      = "tcp"
         }
       ]
-       environment = [
+      environment = [
         { name = "AWS_ACCESS_KEY", value = var.AWS_ACCESS_KEY },
         { name = "AWS_SECRET_KEY", value = var.AWS_SECRET_KEY },
         { name = "DB_HOST", value = var.DB_HOST },
@@ -44,9 +70,21 @@ resource "aws_ecs_service_definition" "c16-trenet-service-ecs" {
         { name = "DB_NAME", value = var.DB_NAME },
         { name = "DB_USER", value = var.DB_USERNAME },
         { name = "DB_PASSWORD", value = var.DB_PASSWORD }
-
       ]
     }
-  ]) 
+  ])
+}
+
+resource "aws_ecs_service" "c16-trenet-service-ecs" {
+  name            = var.ECS_SERVICE
+  cluster         = var.ECS_CLUSTER
+  task_definition = aws_ecs_task_definition.c16-trenet-task.arn
+  desired_count   = 1
+  launch_type     = "FARGATE"
+
+  network_configuration {
+    subnets          = [var.SUBNET1, var.SUBNET2, var.SUBNET3]
+    security_groups  = [aws_security_group.c16-trenet-ecs-sg.id]
+    assign_public_ip = true
   }
-  
+}

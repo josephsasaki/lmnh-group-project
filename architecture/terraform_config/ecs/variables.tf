@@ -10,16 +10,10 @@ variable "VPC_ID" {
   default = "vpc-0f7ba8057a52dd82d"
 }
 
-variable "ECS_SERVICE" {
-  description = "Name of the ecs service"
-  type = string
-  default = "c16-trenet-service-ecs"
-}
-
 variable "DB_PORT" {
   description = "The port number to connect to the rds"
-  type = number
-  default = 1433
+  type = string
+  default = "1433"
 }
 
 variable "DB_DRIVER" {
@@ -68,5 +62,49 @@ variable "DASHBOARD_ECR" {
 variable "DASHBOARD_ECR_IMAGE" {
   description = "Name of the ecr for the dashboard"
   type = string
-  default = "129033205317.dkr.ecr.eu-west-2.amazonaws.com/c16-trenet-dashboard-ecr"
+}
+
+variable "ECS_TASK_DEF" {
+  description = "Name of the ecs task"
+  type = string
+  default = "c16-trenet-task-def-ecs"
+}
+
+variable "ECS_SERVICE" {
+  description = "Name of the ecs service"
+  type = string
+  default = "c16-trenet-service-ecs"
+}
+
+variable "ECS_CLUSTER" {
+  description = "Name of the ecs cluster"
+  type = string
+  default = "c16-ecs-cluster"
+}
+
+variable "SUBNET1" {
+  description = "ID for subnet 1"
+  type = string
+}
+
+variable "SUBNET2" {
+  description = "ID for subnet 2"
+  type = string
+}
+
+variable "SUBNET3" {
+  description = "ID for subnet 3"
+  type = string
+}
+
+variable "SG_NAME" {
+  description = "SG NAME for ecs"
+  type = string
+  default = "c16-trenet-ecs-sg"
+}
+
+variable "EXECUTION_ROLE_ARN" {
+  description = "Execution role for task def"
+  type = string
+  default = "arn:aws:iam::129033205317:role/ecsTaskExecutionRole"
 }
