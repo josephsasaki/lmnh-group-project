@@ -13,6 +13,10 @@ class Botanist:
         self.__name = Botanist.clean_name(botanist_dict_data.get("name"))
         self.__phone = Botanist.clean_phone(botanist_dict_data.get("phone"))
 
+    def get_values(self) -> tuple[str]:
+        '''Return the botanist values to be used in SQL queries.'''
+        return self.__name, self.__email, self.__phone
+
     @staticmethod
     def clean_email(email_in: str) -> str:
         if email_in is None:
@@ -229,6 +233,10 @@ class Plant:
             "scientific_name": response_data.get("scientific_name"),
             "images": response_data.get("images")
         })
+
+    def get_botanist(self) -> Botanist:
+        '''Getter for the plant's botanist.'''
+        return self.__botanist
 
     @staticmethod
     def clean_plant_number(plant_number_in: int) -> int:
