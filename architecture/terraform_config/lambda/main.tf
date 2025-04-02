@@ -83,6 +83,9 @@ resource "aws_lambda_function" "c16-trenet-lambda-pipeline1" {
     variables = {
          DB_USER = var.DB_USERNAME
          DB_PASSWORD = var.DB_PASSWORD
+         DB_PORT = var.DB_PORT
+         DB_NAME = var.DB_NAME
+         DB_DRIVER = var.DB_DRIVER
     }
   }
 }
@@ -97,6 +100,9 @@ resource "aws_lambda_function" "c16-trenet-lambda-pipeline2" {
     variables = {
          DB_USER = var.DB_USERNAME
          DB_PASSWORD = var.DB_PASSWORD
+         DB_PORT = var.DB_PORT
+         DB_NAME = var.DB_NAME
+         DB_DRIVER = var.DB_DRIVER
     }
   }
 }
