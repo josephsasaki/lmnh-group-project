@@ -1,12 +1,16 @@
-
+'''
+    The loading part of the first data pipeline. This script takes the plant data and loads it to the 
+    short-term storage solution (RDS). Reference tables are added first, then the recording data.
+'''
 
 from os import environ as ENV
 from dotenv import load_dotenv
 import pyodbc
-from models import Plant, Botanist, Location, PlantType
+from models import Plant
 
 
-class Load:
+class DatabaseManager:
+    '''Load class used to load plant data to the RDS.'''
 
     CONTINENT_UPSERT = '''
         MERGE INTO continent AS target
@@ -84,48 +88,80 @@ class Load:
         WHERE plant_number = ?;
     '''
 
-    @staticmethod
-    def get_connection():
+    def __init__(self, plants: list[Plant]):
+        self.plants = plants
+
+    def _make_connection(self):
         '''Get the connection to the RDS, using credentials from the .env file.'''
         load_dotenv()
         conn_str = (f"DRIVER={{{ENV['DB_DRIVER']}}};SERVER={ENV['DB_HOST']};"
                     f"PORT={ENV['DB_PORT']};DATABASE={ENV['DB_NAME']};"
                     f"UID={ENV['DB_USERNAME']};PWD={ENV['DB_PASSWORD']};Encrypt=no;")
-        conn = pyodbc.connect(conn_str)
-        return conn
+        self.connection = pyodbc.connect(conn_str)
 
-    @staticmethod
-    def add_new_continents(locations: list[Location], cursor: pyodbc.Cursor):
-        values = [location.get_continent_values() for location in locations]
-        cursor.executemany(Load.CONTINENT_UPSERT, values)
+    def _add_new_locations(self):
+        '''Merge any new locations to the database. A continent is considered new
+        if the continent name doesn't already exist. A country is considered new
+        if the country name doesn't already exist.A city is considered new
+        if the city name doesn't already exist.
+        Note, the cursor commits must be done externally.'''
+        locations = [plant.get_location() for plant in self.plants]
+        # Continents
+        continent_values = [location.get_continent_values()
+                            for location in locations]
+        self.cursor.executemany(self.CONTINENT_UPSERT, continent_values)
+        # Countries
+        country_values = [location.get_country_values()
+                          for location in locations]
+        self.cursor.executemany(self.COUNTRY_UPSERT, country_values)
+        # City
+        city_values = [location.get_city_values() for location in locations]
+        self.cursor.executemany(self.CITY_UPSERT, city_values)
 
-    @staticmethod
-    def add_new_countries(locations: list[Location], cursor: pyodbc.Cursor):
-        values = [location.get_country_values() for location in locations]
-        cursor.executemany(Load.COUNTRY_UPSERT, values)
+    def _add_new_botanists(self):
+        '''Merge any new botanists to the database. A botanist is considered new
+        if their name, email and phone number do not exist.
+        Note, the cursor commits must be done externally.'''
+        botanist_values = [plant.get_botanist().get_values()
+                           for plant in self.plants]
+        self.cursor.executemany(self.BOTANIST_UPSERT, botanist_values)
 
-    @staticmethod
-    def add_new_cities(locations: list[Location], cursor: pyodbc.Cursor):
-        values = [location.get_city_values() for location in locations]
-        cursor.executemany(Load.CITY_UPSERT, values)
+    def _add_new_plant_type(self):
+        '''Merge any new plant types to the database. A plant type is considered new
+        if the plant name (not scientific name)
+        Note, the cursor commits must be done externally.'''
+        plant_type_values = [plant.get_plant_type().get_values()
+                             for plant in self.plants]
+        self.cursor.executemany(self.PLANT_TYPE_UPSERT, plant_type_values)
 
-    @staticmethod
-    def add_new_botanists(botanists: list[Botanist], cursor: pyodbc.Cursor):
-        values = [botanist.get_values() for botanist in botanists]
-        cursor.executemany(Load.BOTANIST_UPSERT, values)
+    def _add_new_plants(self):
+        '''Merge any new plants to the database. A plant is considered new is the 
+        plant_number does not yet exist. If the plant_number does already exist in the database,
+        update the last_watered field.
+        Note, the cursor commits must be done externally.'''
+        plant_values = [plant.get_values() for plant in self.plants]
+        self.cursor.executemany(self.PLANT_UPSERT, plant_values)
 
-    @staticmethod
-    def add_new_plant_type(plant_types: list[PlantType], cursor: pyodbc.Cursor):
-        values = [plant_type.get_values() for plant_type in plant_types]
-        cursor.executemany(Load.PLANT_TYPE_UPSERT, values)
+    def _add_new_records(self):
+        '''Insert the new records to the database. 
+        Note, the cursor commits must be done externally.'''
+        record_values = [plant.get_record_values() for plant in self.plants]
+        self.cursor.executemany(self.RECORD_INSERT, record_values)
 
-    @staticmethod
-    def add_new_plants(plants: list[Plant], cursor: pyodbc.Cursor):
-        '''Insert plants only if plant_number doesn't exist, update last_watered if it does.'''
-        values = [plant.get_values() for plant in plants]
-        cursor.executemany(Load.PLANT_UPSERT, values)
-
-    @staticmethod
-    def add_new_records(plants: list[Plant], cursor: pyodbc.Cursor):
-        values = [plant.get_record_values() for plant in plants]
-        cursor.executemany(Load.RECORD_INSERT, values)
+    def load_all(self) -> None:
+        '''Connect to the database and load the plant data passed at instantiation.'''
+        try:
+            self._make_connection()
+            with self.connection.cursor() as self.cursor:
+                self._add_new_botanists()
+                self._add_new_locations()
+                self._add_new_plant_type()
+                self._add_new_plants()
+                self._add_new_records()
+                # commit all changes to database
+                self.cursor.commit()
+        except:
+            pass
+        finally:
+            self.cursor.close()
+            self.connection.close()
