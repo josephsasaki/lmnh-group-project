@@ -34,7 +34,7 @@ CREATE TABLE plant_type (
     plant_type_id SMALLINT IDENTITY(1,1) PRIMARY KEY,
     plant_type_name VARCHAR(100) NOT NULL,
     plant_type_scientific_name VARCHAR(100),
-    plant_type_image_url VARCHAR(100)
+    plant_type_image_url VARCHAR(200)
 );
 
 CREATE TABLE botanist(
@@ -61,7 +61,7 @@ CREATE TABLE plant(
 
 CREATE TABLE record(
     record_id SMALLINT IDENTITY(1,1) PRIMARY KEY,
-    record_soil_temperature FLOAT,
+    record_soil_moisture FLOAT,
     record_temperature FLOAT,
     record_timestamp DATETIME NOT NULL,
     plant_id SMALLINT NOT NULL,

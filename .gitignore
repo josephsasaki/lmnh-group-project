@@ -182,4 +182,5 @@ terraform.*
 *.pem
 *.pemkey
 terraform.tfvars
+.env
 
