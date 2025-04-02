@@ -34,7 +34,7 @@ CREATE TABLE plant_type (
     plant_type_id SMALLINT IDENTITY(1,1) PRIMARY KEY,
     plant_type_name VARCHAR(100) NOT NULL,
     plant_type_scientific_name VARCHAR(100),
-    plant_type_image_url VARCHAR(100)
+    plant_type_image_url VARCHAR(200)
 );
 
 CREATE TABLE botanist(
