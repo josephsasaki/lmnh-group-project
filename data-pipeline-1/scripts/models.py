@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 import re
 import pandas as pd
@@ -88,7 +89,6 @@ class Location:
         if len(location_data_in) != Location.COUNT_OF_LOCATION_ATTRIBUTES:
             raise ValueError(
                 f"There should be {Location.COUNT_OF_LOCATION_ATTRIBUTES} values in the location data, instead there is {len(location_data_in)}")
-
         return {
             "latitude": location_data_in[0],
             "longitude": location_data_in[1],
@@ -102,7 +102,10 @@ class Location:
         if country_code_in is None:
             raise ValueError(
                 'The country code attribute is not included in the input data.')
-        df_country = pd.read_csv('../country_code_data/code_to_name.csv')
+        script_dir = os.path.dirname(os.path.realpath(__file__))
+        file_path = os.path.join(
+            script_dir, './../country_code_data/code_to_name.csv')
+        df_country = pd.read_csv(file_path)
         df_country = df_country[df_country['alpha-2']
                                 == country_code_in.upper()]
         country = df_country['name'].iloc[0]
@@ -137,7 +140,7 @@ class Location:
 class Record:
     """Record class which helps store incoming data from API"""
     MAX_SOIL_MOISTURE = 100
-    MIN_SOIL_MOISTURE = 0
+    MIN_SOIL_MOISTURE = -10
 
     def __init__(self, record_dict_data: dict) -> None:
         """Initialises the Record class"""
@@ -245,6 +248,15 @@ class Plant:
             "scientific_name": response_data.get("scientific_name"),
             "images": response_data.get("images")
         })
+
+    def get_botanist(self) -> Botanist:
+        return self.__botanist
+
+    def get_location(self) -> Location:
+        return self.__location
+
+    def get_plant_type(self) -> PlantType:
+        return self.__plant_type
 
     def get_values(self) -> tuple[str]:
         return (

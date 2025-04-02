@@ -57,9 +57,6 @@ class Load:
         MERGE INTO plant_type AS target
         USING (SELECT ? AS plant_type_name, ? AS plant_type_scientific_name, ? AS plant_type_image_url) AS SOURCE
         ON target.plant_type_name = source.plant_type_name
-            AND target.plant_type_name = source.plant_type_name
-            AND target.plant_type_scientific_name = source.plant_type_scientific_name
-            AND target.plant_type_image_url = source.plant_type_image_url
         WHEN NOT MATCHED THEN
             INSERT (plant_type_name, plant_type_scientific_name, plant_type_image_url)
             VALUES (source.plant_type_name, source.plant_type_scientific_name, source.plant_type_image_url);
@@ -119,14 +116,14 @@ class Load:
     def add_new_botanists(botanists: list[Botanist], connection):
         with connection.cursor() as cursor:
             for botanist in botanists:
-                cursor.execute(Load.TEST, botanist.get_values())
+                cursor.execute(Load.BOTANIST_UPSERT, botanist.get_values())
                 cursor.commit()
 
     @staticmethod
-    def add_new_botanists(plant_types: list[PlantType], connection):
+    def add_new_plant_type(plant_types: list[PlantType], connection):
         with connection.cursor() as cursor:
             for plant_type in plant_types:
-                cursor.execute(Load.TEST, plant_type.get_values())
+                cursor.execute(Load.PLANT_TYPE_UPSERT, plant_type.get_values())
                 cursor.commit()
 
     @staticmethod
@@ -136,20 +133,3 @@ class Load:
             for plant in plants:
                 cursor.execute(Load.PLANT_UPSERT, plant.get_values())
                 cursor.commit()
-
-
-if __name__ == "__main__":
-    connection = Load.get_connection()
-    try:
-        botanists = [
-            Botanist({"name": "Testing", "email": "test.test@test.com",
-                      "phone": "001-481-273-3691x127"}),
-            Botanist({"name": "Joe", "email": "Joe.s@test.com",
-                      "phone": "001-481-273-3691x128"}),
-        ]
-        Load.add_new_botanists(botanists, connection)
-    except Exception as e:
-        print("here??/")
-        raise (e)
-    finally:
-        connection.close()

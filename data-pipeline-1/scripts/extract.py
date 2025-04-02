@@ -22,6 +22,7 @@ class Extract:
     def extract():
         '''Extract the endpoint data for all ids in the specified range.'''
         plant_ids = list(range(Extract.MIN_PLANT_ID, Extract.MAX_PLANT_ID+1))
+        print(mp.cpu_count())
         with mp.Pool(mp.cpu_count()) as p:
             fetched_data = p.map(Extract._make_request, plant_ids)
         return [json_obj for json_obj in fetched_data if json_obj is not None]
