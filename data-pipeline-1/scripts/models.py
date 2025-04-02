@@ -74,6 +74,15 @@ class Location:
         self.__continent = continent
         self.__capital = capital
 
+    def get_continent_values(self) -> tuple[str]:
+        return (self.__continent,)
+
+    def get_country_values(self) -> tuple[str]:
+        return (self.__country, self.__capital, self.__continent)
+
+    def get_city_values(self) -> tuple[str]:
+        return (self.__city, self.__latitude, self.__longitude, self.__country)
+
     @staticmethod
     def convert_location_data_to_dict(location_data_in: list) -> dict:
         if len(location_data_in) != Location.COUNT_OF_LOCATION_ATTRIBUTES:
@@ -182,6 +191,9 @@ class PlantType:
         self.__image_url = PlantType.clean_image_url(
             plant_type_dict_data.get('images'))
 
+    def get_values(self) -> tuple[str]:
+        return (self.__name, self.__scientific_name, self.__image_url)
+
     @staticmethod
     def clean_plant_type_name(plant_type_name_in: str) -> str:
         if plant_type_name_in is None:
@@ -234,9 +246,14 @@ class Plant:
             "images": response_data.get("images")
         })
 
-    def get_botanist(self) -> Botanist:
-        '''Getter for the plant's botanist.'''
-        return self.__botanist
+    def get_values(self) -> tuple[str]:
+        return (
+            self.__plant_number,
+            self.__plant_type.get_values()[0],
+            self.__botanist.get_values()[0],
+            self.__location.get_city_values()[0],
+            self.__last_watered,
+        )
 
     @staticmethod
     def clean_plant_number(plant_number_in: int) -> int:

@@ -3,7 +3,7 @@
 from os import environ as ENV
 from dotenv import load_dotenv
 import pyodbc
-from models import Plant, Botanist, Location
+from models import Plant, Botanist, Location, PlantType
 
 
 class Load:
@@ -64,6 +64,23 @@ class Load:
             INSERT (plant_type_name, plant_type_scientific_name, plant_type_image_url)
             VALUES (source.plant_type_name, source.plant_type_scientific_name, source.plant_type_image_url);
     '''
+    PLANT_UPSERT = '''
+        MERGE INTO plant AS target
+        USING (
+            SELECT 
+                ? AS plant_number, 
+                (SELECT plant_type_id FROM plant_type WHERE plant_type_name = ?) AS plant_type_id, 
+                (SELECT botanist_id FROM botanist WHERE botanist_name = ?) AS botanist_id,
+                (SELECT city_id FROM city WHERE city_name = ?) AS city_id,
+                ? AS plant_last_watered
+        ) AS source
+        ON target.plant_number = source.plant_number
+        WHEN MATCHED THEN
+            UPDATE SET target.plant_last_watered = source.plant_last_watered
+        WHEN NOT MATCHED THEN
+            INSERT (plant_type_id, plant_number, botanist_id, city_id, plant_last_watered)
+            VALUES (source.plant_type_id, source.plant_number, source.botanist_id, source.city_id, source.plant_last_watered);
+    '''
 
     @staticmethod
     def get_connection():
@@ -103,6 +120,21 @@ class Load:
         with connection.cursor() as cursor:
             for botanist in botanists:
                 cursor.execute(Load.TEST, botanist.get_values())
+                cursor.commit()
+
+    @staticmethod
+    def add_new_botanists(plant_types: list[PlantType], connection):
+        with connection.cursor() as cursor:
+            for plant_type in plant_types:
+                cursor.execute(Load.TEST, plant_type.get_values())
+                cursor.commit()
+
+    @staticmethod
+    def add_new_plants(plants: list[Plant], connection):
+        '''Insert plants only if plant_number doesn't exist, update last_watered if it does.'''
+        with connection.cursor() as cursor:
+            for plant in plants:
+                cursor.execute(Load.PLANT_UPSERT, plant.get_values())
                 cursor.commit()
 
 
