@@ -30,7 +30,7 @@ class Load:
         )
 
     @staticmethod
-    def get_bucket_key():
+    def get_bucket_key() -> str:
         # storing the previous days data so timedelta is -1 day
         yesterday_date = datetime.now()-timedelta(days=1)
         return f'{yesterday_date.year}/{yesterday_date.month}/{yesterday_date.day}/{yesterday_date.hour}.csv'
