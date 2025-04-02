@@ -3,14 +3,20 @@
     This script combines each part of the pipeline: extract, transform and load.
 '''
 
-from extract import Extract
-from transform import Transform
-from load import Load
+from extract import ExpiredDataFinder
+from transform import ExpiredDataHelper
+from load import DataArchiverAndDeleter
 
 
 if __name__ == "__main__":
-    data_to_be_archived = Extract.extract_data_to_be_archived()
-    record_ids_to_remove = Transform.get_primary_keys(data_to_be_archived)
-    Transform.convert_dataframe_to_csv(data_to_be_archived)
-    Load.upload_csv_to_bucket()
-    Load.remove_rows_from_rds(record_ids_to_remove)
+    # Get data to archive
+    data_finder = ExpiredDataFinder()
+    df_to_archive = data_finder.extract_data_to_be_archived()
+    # Initiate archive data helper
+    data_helper = ExpiredDataHelper(df_to_archive)
+    data_helper.convert_dataframe_to_csv()
+    # Delete from RDS and save csv
+    archiver_deleter = DataArchiverAndDeleter()
+    archiver_deleter.upload_csv_to_bucket()
+    archiver_deleter(data_finder.get_connection(),
+                     data_helper.get_primary_keys())

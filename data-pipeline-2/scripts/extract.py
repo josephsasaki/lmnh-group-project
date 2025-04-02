@@ -11,7 +11,7 @@ import pyodbc
 from dotenv import load_dotenv
 
 
-class Extract:
+class ExpiredDataFinder:
     '''A static class from which extract methods are called.'''
 
     QUERY = '''
@@ -47,8 +47,10 @@ class Extract:
     JOIN continent AS con ON con.continent_id = cou.continent_id
     '''
 
-    @staticmethod
-    def _get_connection() -> pyodbc.Connection:
+    def __init__(self):
+        self.conn = self._initiate_connection()
+
+    def _initiate_connection(self) -> pyodbc.Connection:
         '''Get the connection to the RDS, using credentials from the .env file.'''
         load_dotenv()
         conn_str = (f"DRIVER={{{ENV['DB_DRIVER']}}};SERVER={ENV['DB_HOST']};"
@@ -57,8 +59,12 @@ class Extract:
         conn = pyodbc.connect(conn_str)
         return conn
 
-    @staticmethod
-    def extract_data_to_be_archived() -> pd.DataFrame:
+    def get_connection(self):
+        return self.conn
+
+    def close_connection(self):
+        self.conn.close()
+
+    def extract_data_to_be_archived(self) -> pd.DataFrame:
         '''Extract the rows from the RDS which are outside the 24 hour window.'''
-        with Extract._get_connection() as connection:
-            return pd.read_sql(Extract.QUERY, connection)
+        return pd.read_sql(self.QUERY, self.conn)

@@ -7,50 +7,50 @@
 import os
 from datetime import datetime, timedelta
 import boto3
+import pyodbc
 from dotenv import load_dotenv
-from extract import Extract
+from extract import ExpiredDataFinder
+from transform import ExpiredDataHelper
 
 
-class Load:
+class DataArchiverAndDeleter:
     '''Static class for loading data from the csv file to the S3 bucket.'''
 
     CSV_PATH = os.path.join(os.path.dirname(
         __file__), '..', 'data', 'archived_data.csv')
-    DELETE_QUERY = "DELETE FROM record WHERE id IN (%s)"
+    BASE_DELETE_QUERY = "DELETE FROM record WHERE record_id IN ({wildcards})"
 
-    @staticmethod
-    def _get_s3_client():
+    def __init__(self):
+        load_dotenv()
+        self.client_s3 = self._get_s3_client()
+        self.key_s3 = self.get_bucket_key()
+
+    def _get_s3_client(self):
         '''Initialise an S3 client with boto.'''
         load_dotenv()
-        s3 = boto3.client(
+        client = boto3.client(
             "s3",
             aws_access_key_id=os.environ['ACCESS_KEY_ID'],
             aws_secret_access_key=os.environ['SECRET_ACCESS_KEY_ID'],
-            region_name=os.environ['AWS_REGION'],
-        )
+            region_name=os.environ['AWS_REGION'])
+        return client
 
-    @staticmethod
-    def get_bucket_key() -> str:
+    def get_delete_query(self, number_of_ids):
+        return self.BASE_DELETE_QUERY.format(wildcards=','.join(['?']*number_of_ids))
+
+    def get_bucket_key(self) -> str:
         # storing the previous days data so timedelta is -1 day
         yesterday_date = datetime.now()-timedelta(days=1)
         return f'{yesterday_date.year}/{yesterday_date.month}/{yesterday_date.day}/{yesterday_date.hour}.csv'
 
-    @staticmethod
-    def upload_csv_to_bucket():
+    def upload_csv_to_bucket(self):
         '''Upload the archived data, in the csv to the specified S3 bucket.'''
-        s3 = Load._get_s3_client()
-        key = Load.get_bucket_key()
-        s3.upload_file(Load.CSV_PATH, os.environ['S3_BUCKET'], key)
+        with open(self.CSV_PATH, 'rb') as file:
+            self.client_s3.put_object(
+                Bucket=os.environ['S3_BUCKET'], Key=self.key_s3, Body=file)
 
-    @staticmethod
-    def remove_rows_from_rds(record_ids: list[int]):
-        with Extract._get_connection() as connection:
-            with connection.cursor() as cursor:
-                format_strings = ",".join(["%s"] * len(record_ids))
-                delete_query = Load.DELETE_QUERY.format(format_strings)
-                cursor.execute(delete_query, record_ids)
-                connection.commit()
-
-
-if __name__ == '__main__':
-    print(datetime.now()-timedelta(days=1))
+    def remove_rows_from_rds(self, conn: pyodbc.Connection, record_ids: tuple[int]):
+        with conn.cursor() as cursor:
+            delete_query = self.get_delete_query(len(record_ids))
+            cursor.execute(delete_query, record_ids)
+            conn.commit()
