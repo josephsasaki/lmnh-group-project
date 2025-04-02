@@ -45,7 +45,7 @@ class Extract:
             database=os.environ['DB_NAME'],
         )
 
-    def extract_data_to_be_archived() -> pd.DataFrame:
+    def extract_data_to_be_archived(self) -> pd.DataFrame:
         '''Extract the rows from the RDS which are outside the 24 hour window.'''
         with Extract._get_connection() as connection:
             return pd.read_sql(Extract.QUERY, connection)
