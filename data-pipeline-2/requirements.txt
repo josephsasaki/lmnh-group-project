@@ -1,7 +1,6 @@
 pandas
-pymysql
 python-dotenv
 boto3
-pyodbc
+pymssql
 freezegun
 pytest
