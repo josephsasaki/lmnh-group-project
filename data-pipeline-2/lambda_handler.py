@@ -10,6 +10,9 @@ def lambda_handler(event: None, context: None):
         logger.info("Running...")
         run_archive_pipeline()
         logger.info("Successful")
+        return {
+            'status_code': 200
+        }
     except Exception as e:
         logger.error("Error: %s", e)
         raise

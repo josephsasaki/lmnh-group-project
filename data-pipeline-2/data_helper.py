@@ -13,7 +13,7 @@ class DataHelper:
     '''Helper class to aid in handing of data'''
 
     DATA_FOLDER_PATH = os.path.join(os.path.dirname(
-        __file__), '..', 'data', 'archived_data.csv')
+        __file__), 'data', 'archived_data.csv')
 
     def __init__(self, expired_data_df: pd.DataFrame):
         if not isinstance(expired_data_df, pd.DataFrame):
