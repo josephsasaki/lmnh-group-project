@@ -118,10 +118,7 @@ class Location:
         if country_code is None:
             raise ValueError(
                 'The country code attribute is not included in the input data.')
-        script_dir = os.path.dirname(os.path.realpath(__file__))
-        file_path = os.path.join(
-            script_dir, './../country_code_data/code_to_name.csv')
-        df_country = pd.read_csv(file_path)
+        df_country = pd.read_csv('code_to_name.csv')
         df_country = df_country[df_country['alpha-2']
                                 == country_code.upper()]
         return df_country['name'].iloc[0]

@@ -6,7 +6,7 @@
 
 from os import environ as ENV
 from dotenv import load_dotenv
-import pyodbc
+import pymssql
 from models import Plant
 
 
@@ -15,7 +15,7 @@ class DatabaseManager:
 
     CONTINENT_UPSERT = '''
         MERGE INTO continent AS target
-        USING (SELECT ? AS continent_name) AS source
+        USING (SELECT %s AS continent_name) AS source
         ON target.continent_name = source.continent_name
         WHEN NOT MATCHED THEN
             INSERT (continent_name)
@@ -25,9 +25,9 @@ class DatabaseManager:
         MERGE INTO country AS target
         USING (
             SELECT 
-                ? AS country_name, 
-                ? AS country_capital, 
-                (SELECT continent_id FROM continent WHERE continent_name = ?) AS continent_id
+                %s AS country_name, 
+                %s AS country_capital, 
+                (SELECT continent_id FROM continent WHERE continent_name = %s) AS continent_id
         ) AS source
         ON target.country_name = source.country_name
         WHEN NOT MATCHED AND source.continent_id IS NOT NULL THEN
@@ -38,10 +38,10 @@ class DatabaseManager:
         MERGE INTO city AS target
         USING (
             SELECT 
-                ? AS city_name, 
-                ? AS city_latitude, 
-                ? AS city_longitude, 
-                (SELECT country_id FROM country WHERE country_name = ?) AS country_id
+                %s AS city_name, 
+                %s AS city_latitude, 
+                %s AS city_longitude, 
+                (SELECT country_id FROM country WHERE country_name = %s) AS country_id
         ) AS source
         ON target.city_name = source.city_name
         WHEN NOT MATCHED AND source.country_id IS NOT NULL THEN
@@ -50,7 +50,7 @@ class DatabaseManager:
     '''
     BOTANIST_UPSERT = '''
         MERGE INTO botanist AS target
-        USING (SELECT ? AS botanist_name, ? AS botanist_email, ? AS botanist_phone) AS source
+        USING (SELECT %s AS botanist_name, %s AS botanist_email, %s AS botanist_phone) AS source
         ON target.botanist_name = source.botanist_name
             AND target.botanist_email = source.botanist_email
             AND target.botanist_phone = source.botanist_phone
@@ -60,7 +60,7 @@ class DatabaseManager:
     '''
     PLANT_TYPE_UPSERT = '''
         MERGE INTO plant_type AS target
-        USING (SELECT ? AS plant_type_name, ? AS plant_type_scientific_name, ? AS plant_type_image_url) AS SOURCE
+        USING (SELECT %s AS plant_type_name, %s AS plant_type_scientific_name, %s AS plant_type_image_url) AS SOURCE
         ON target.plant_type_name = source.plant_type_name
         WHEN NOT MATCHED THEN
             INSERT (plant_type_name, plant_type_scientific_name, plant_type_image_url)
@@ -70,11 +70,11 @@ class DatabaseManager:
         MERGE INTO plant AS target
         USING (
             SELECT 
-                ? AS plant_number, 
-                (SELECT plant_type_id FROM plant_type WHERE plant_type_name = ?) AS plant_type_id, 
-                (SELECT botanist_id FROM botanist WHERE botanist_name = ?) AS botanist_id,
-                (SELECT city_id FROM city WHERE city_name = ?) AS city_id,
-                ? AS plant_last_watered
+                %s AS plant_number, 
+                (SELECT plant_type_id FROM plant_type WHERE plant_type_name = %s) AS plant_type_id, 
+                (SELECT botanist_id FROM botanist WHERE botanist_name = %s) AS botanist_id,
+                (SELECT city_id FROM city WHERE city_name = %s) AS city_id,
+                %s AS plant_last_watered
         ) AS source
         ON target.plant_number = source.plant_number
         WHEN MATCHED THEN
@@ -85,8 +85,8 @@ class DatabaseManager:
     '''
     RECORDING_INSERT = '''
         INSERT INTO record (plant_id, record_soil_moisture, record_temperature, record_timestamp)
-        SELECT plant_id, ?, ?, ? FROM plant
-        WHERE plant_number = ?;
+        SELECT plant_id, %s, %s, %s FROM plant
+        WHERE plant_number = %s;
     '''
 
     def __init__(self, plants: list[Plant]):
@@ -97,10 +97,13 @@ class DatabaseManager:
     def _make_connection(self):
         '''Get the connection to the RDS, using credentials from the .env file.'''
         load_dotenv()
-        conn_str = (f"DRIVER={{{ENV['DB_DRIVER']}}};SERVER={ENV['DB_HOST']};"
-                    f"PORT={ENV['DB_PORT']};DATABASE={ENV['DB_NAME']};"
-                    f"UID={ENV['DB_USERNAME']};PWD={ENV['DB_PASSWORD']};Encrypt=no;")
-        return pyodbc.connect(conn_str)
+        return pymssql.connect(
+            server=ENV['DB_HOST'],
+            user=ENV['DB_USERNAME'],
+            password=ENV['DB_PASSWORD'],
+            database=ENV['DB_NAME'],
+            port=ENV['DB_PORT']
+        )
 
     def _add_new_locations(self):
         '''Merge any new locations to the database. A continent is considered new
@@ -159,7 +162,7 @@ class DatabaseManager:
             self._add_new_plant_type()
             self._add_new_plants()
             self._add_new_recordings()
-            self.cursor.commit()
+            self.connection.commit()
         except Exception as e:
             print(f"Error in load_all: {e}")
         finally:

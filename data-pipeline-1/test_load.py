@@ -24,7 +24,7 @@ def mock_plants():
     return [mock_plant] * 5
 
 
-@patch("load.pyodbc.connect")
+@patch("load.pymssql.connect")
 def test_load_all(mock_connect, mock_plants):
     mock_connection = mock_connect.return_value
     mock_cursor = mock_connection.cursor.return_value
