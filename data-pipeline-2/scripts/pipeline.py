@@ -9,7 +9,7 @@ from data_helper import DataHelper
 from s3_manager import S3Manager
 
 
-if __name__ == "__main__":
+def run_archive_pipeline():
     # Get data to archive
     rds_manager = RDSManager()
     df_to_archive = rds_manager.extract_data_to_be_archived()
