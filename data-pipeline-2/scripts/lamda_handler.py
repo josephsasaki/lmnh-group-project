@@ -9,7 +9,7 @@ def lambda_handler(event: None, context: None):
     try:
         logger.info("Running...")
         run_archive_pipeline()
-        logger.info(f"Successful")
+        logger.info("Successful")
     except Exception as e:
         logger.error(f"Error: {str(e)}")
         raise
