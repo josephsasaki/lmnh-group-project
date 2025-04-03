@@ -6,7 +6,6 @@
 
 from os import environ as ENV
 import sys
-import datetime as datetime
 import pandas as pd
 import pyodbc
 from dotenv import load_dotenv
@@ -72,7 +71,6 @@ class RDSManager:
     def _get_delete_query(self, number_of_ids: int) -> str:
         '''Creates delete query from a base query'''
         if number_of_ids == 0:
-            # Not sure about sys.exit() here
             print('No 24 hour old data...\nQuitting')
             sys.exit()
         elif number_of_ids < 0:

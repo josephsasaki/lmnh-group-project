@@ -1,7 +1,8 @@
 '''
     DATA PIPELINE 2: DataHelper
-    A helper class which would not fit into rds_manager or s3_manager. On method deals with saving the 24 hour
-    old data in a local csv. The second method returns the primary keys (record_id) of the 24 old data
+    A helper class which would not fit into rds_manager or s3_manager. On method deals with saving 
+    the 24 hour old data in a local csv. The second method returns the primary keys (record_id) of
+    the 24 old data
 '''
 
 import os
@@ -16,7 +17,7 @@ class DataHelper:
 
     def __init__(self, expired_data_df: pd.DataFrame):
         if not isinstance(expired_data_df, pd.DataFrame):
-            raise TypeError(f'The input to this class is not a dataframe!')
+            raise TypeError('The input to this class is not a dataframe!')
         self.record_ids = tuple(expired_data_df['record_id'].to_list())
         self.data_to_save = expired_data_df.drop(columns=['record_id'], axis=1)
 
