@@ -1,22 +1,26 @@
-"""
-This script takes in a list of responses in the form of dictionaries. It passes this to
-the Plant object which cleans and instantiates a Plant and related objects. This object is then
-stored in a list.
-"""
+'''
+    The transformation part of the first data pipeline. The aim of this script is to transform the raw plant data
+    into objects, with cleaned and connected attributes.
+'''
+
 from models import Plant
 
 
-class Transform:
-    """Transform class used to clean json data and instantiate objects"""
-    @staticmethod
-    def create_plant_objects(plant_responses: list[dict]) -> list[Plant]:
-        """Creates a list of Plant objects, one object for each json response"""
-        plant_list = []
-        for response in plant_responses:
+class PlantRecordingFactory:
+    '''Class which takes a list of json objects containing plant data and transforms them into
+    a list of actual plant objects.'''
+
+    def __init__(self, responses: list[dict]):
+        '''Initialise with the list of responses'''
+        self.responses = responses
+
+    def produce_plant_objects(self) -> list[Plant]:
+        '''Creates a list of Plant objects, one object for each json response. If an error is raised
+        in the process of making the plant object, the response is deemed invalid and skipped.'''
+        plants = []
+        for response in self.responses:
             try:
-                plant = Plant(response)
-                plant_list.append(plant)
+                plants.append(Plant(response))
             except ValueError:
                 continue
-
-        return plant_list
+        return plants

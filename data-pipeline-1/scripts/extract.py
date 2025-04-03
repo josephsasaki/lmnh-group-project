@@ -1,27 +1,34 @@
+'''
+    The extraction part of the first data pipeline. The source of data is an API, which provided readings
+    from on around 50 different plants. The data for each plant is read and stored in a Python list.
+'''
+
 import requests
 import multiprocessing as mp
-import time
 
 
-class Extract:
-    '''Static class containing methods related to extraction.'''
+class RecordingAPIExtractor:
+    '''The APIExtractor class extracts data recorded from the plants API across all specified plant ids.'''
 
-    API_ENDPOINT = "https://data-eng-plants-api.herokuapp.com/plants/"
-    MIN_PLANT_ID = 1
-    MAX_PLANT_ID = 55
+    def __init__(self, api_url: str, min_plant_id: int = 1, max_plant_id: int = 55):
+        '''The minimum and maximum values represent the range of plant ids checked to have data.'''
+        self.api_url = api_url
+        self.min_plant_id = min_plant_id
+        self.max_plant_id = max_plant_id
 
-    @staticmethod
-    def _make_request(plant_id: int) -> dict:
-        '''Given a plant_id, make a get request to the endpoint and return the result.'''
-        request = requests.get(Extract.API_ENDPOINT+str(plant_id))
+    def _make_request(self, plant_id: int) -> dict:
+        '''Given a plant_id, make a get request to the endpoint and return the result.
+        If the request returns anything other than a success code, None is returned; this
+        can happen if the plant_id is invalid, or if a faulty reading is made.'''
+        request = requests.get(f"{self.api_url}{plant_id}")
         if request.status_code == 200:
             return request.json()
         return None
 
-    @staticmethod
-    def extract_api_data():
-        '''Extract the endpoint data for all ids in the specified range.'''
-        plant_ids = list(range(Extract.MIN_PLANT_ID, Extract.MAX_PLANT_ID+1))
+    def extract_api_data(self):
+        '''Extract the endpoint data for all ids in the specified range. Multiprocessing
+        is used since the API can be quite slow. None results are filtered out the final result.'''
+        plant_ids = list(range(self.min_plant_id, self.max_plant_id+1))
         with mp.Pool(mp.cpu_count()) as p:
-            fetched_data = p.map(Extract._make_request, plant_ids)
+            fetched_data = p.map(self._make_request, plant_ids)
         return [json_obj for json_obj in fetched_data if json_obj is not None]
