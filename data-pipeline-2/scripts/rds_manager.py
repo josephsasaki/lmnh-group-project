@@ -1,18 +1,17 @@
 '''
     DATA PIPELINE 2: RDS manager
-    This script defines the class that interacts with the remote RDS on AWS. It has methods to get old data,
-    delete rows of data and close the connection.
+    This script defines the class that interacts with the remote RDS on AWS. It has methods to
+    get old data, delete rows of data and close the connection.
 '''
 
 from os import environ as ENV
-import datetime as datetime
 import pandas as pd
 import pyodbc
 from dotenv import load_dotenv
 
 
 class RDSManager:
-    '''A static class from which extract methods are called.'''
+    '''A class for interacting with a remote RDS on AWS'''
 
     QUERY = '''
     WITH outside_24_hour AS (
@@ -68,13 +67,13 @@ class RDSManager:
         '''Extract the rows from the RDS which are outside the 24 hour window.'''
         return pd.read_sql(self.QUERY, self.conn)
 
-    def get_delete_query(self, number_of_ids: int) -> str:
+    def _get_delete_query(self, number_of_ids: int) -> str:
         '''Creates delete query from a base query'''
         return self.BASE_DELETE_QUERY.format(wildcards=','.join(['?']*number_of_ids))
 
     def remove_rows_from_rds(self, record_ids: tuple[int]) -> None:
         """Removes rows from record table using input record_id's"""
         with self.conn.cursor() as cursor:
-            delete_query = self.get_delete_query(len(record_ids))
+            delete_query = self._get_delete_query(len(record_ids))
             cursor.execute(delete_query, record_ids)
             self.conn.commit()

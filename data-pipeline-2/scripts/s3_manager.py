@@ -18,7 +18,7 @@ class S3Manager:
     def __init__(self):
         load_dotenv()
         self.client_s3 = self._get_s3_client()
-        self.key_s3 = self.get_bucket_key()
+        self.key_s3 = self._create_bucket_key()
 
     def _get_s3_client(self):
         '''Initialise an S3 client with boto3.'''
@@ -30,7 +30,7 @@ class S3Manager:
             region_name=os.environ['AWS_REGION'])
         return client
 
-    def get_bucket_key(self) -> str:
+    def _create_bucket_key(self) -> str:
         """Returns the key of the object (csv) to be stored on S3."""
         # storing the previous days data so timedelta is -1 day
         yesterday_date = datetime.now()-timedelta(days=1)
