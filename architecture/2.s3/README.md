@@ -38,5 +38,6 @@ The `terraform.tfvars` file is where you provide values for the variables that d
    terraform init
    
 2. **Apply the Terraform configuration**:
+
    terraform apply
    Provide confirmation i.e 'yes' when prompted with: Do you want to perform these actions?
