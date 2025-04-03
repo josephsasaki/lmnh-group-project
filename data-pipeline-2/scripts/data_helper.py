@@ -26,5 +26,5 @@ class DataHelper:
         self.data_to_save.to_csv(self.DATA_FOLDER_PATH, index=False)
 
     def get_primary_keys(self):
-        '''returns the primary keys (record_id) of the records that will be deleted'''
+        '''Returns the primary keys (record_id) of the records that will be deleted'''
         return self.record_ids

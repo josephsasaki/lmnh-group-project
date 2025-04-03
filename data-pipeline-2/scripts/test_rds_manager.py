@@ -6,7 +6,7 @@ from rds_manager import RDSManager
 
 class TestRDSManager:
     @patch('rds_manager.RDSManager._initiate_connection')
-    def test_connection_function_called_on_instantiation(self, mock_conn_function):
+    def test_connection_function_called(self, mock_conn_function):
         rds_manager = RDSManager()
         mock_conn_function.assert_called_once()
 
@@ -23,7 +23,7 @@ class TestRDSManager:
                               (2, "DELETE FROM record WHERE record_id IN (?,?)"),
                               (4, "DELETE FROM record WHERE record_id IN (?,?,?,?)")])
     @patch('rds_manager.RDSManager._initiate_connection')
-    def test_correct_get_delete_query_inputs(self, mock_conn_function, test_in, expected):
+    def test_correct_get_delete_query_outputs(self, mock_conn_function, test_in, expected):
         rds_manager = RDSManager()
         assert rds_manager._get_delete_query(test_in) == expected
 
