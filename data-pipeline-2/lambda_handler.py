@@ -14,5 +14,7 @@ def lambda_handler(event: None, context: None):
             'status_code': 200
         }
     except Exception as e:
-        logger.error("Error: %s", e)
-        raise
+        return {
+            'status_code': 400,
+            'Error': e
+        }

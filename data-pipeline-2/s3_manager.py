@@ -14,7 +14,7 @@ class S3Manager:
     '''Class that interacts with AWS S3 bucket'''
 
     CSV_PATH = os.path.join(os.path.dirname(
-        __file__), '..', 'data', 'archived_data.csv')
+        __file__), 'data', 'archived_data.csv')
 
     def __init__(self):
         load_dotenv()
