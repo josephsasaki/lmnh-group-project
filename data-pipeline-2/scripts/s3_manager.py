@@ -1,24 +1,19 @@
 '''
-    DATA PIPELINE 2: load
-    Load the csv file in the data folder to the S3 bucket. The key for the csv file determines the date and time
-    of archival.
+    DATA PIPELINE 2: s3_manager
+    Deals with interacting with AWS S3 bucket
 '''
 
 import os
 from datetime import datetime, timedelta
 import boto3
-import pyodbc
 from dotenv import load_dotenv
-from extract import ExpiredDataFinder
-from transform import ExpiredDataHelper
 
 
-class DataArchiverAndDeleter:
-    '''Static class for loading data from the csv file to the S3 bucket.'''
+class S3Manager:
+    '''Class that interacts with AWS S3 bucket'''
 
     CSV_PATH = os.path.join(os.path.dirname(
         __file__), '..', 'data', 'archived_data.csv')
-    BASE_DELETE_QUERY = "DELETE FROM record WHERE record_id IN ({wildcards})"
 
     def __init__(self):
         load_dotenv()
@@ -26,7 +21,7 @@ class DataArchiverAndDeleter:
         self.key_s3 = self.get_bucket_key()
 
     def _get_s3_client(self):
-        '''Initialise an S3 client with boto.'''
+        '''Initialise an S3 client with boto3.'''
         load_dotenv()
         client = boto3.client(
             "s3",
@@ -35,10 +30,8 @@ class DataArchiverAndDeleter:
             region_name=os.environ['AWS_REGION'])
         return client
 
-    def get_delete_query(self, number_of_ids):
-        return self.BASE_DELETE_QUERY.format(wildcards=','.join(['?']*number_of_ids))
-
     def get_bucket_key(self) -> str:
+        """Returns the key of the object (csv) to be stored on S3."""
         # storing the previous days data so timedelta is -1 day
         yesterday_date = datetime.now()-timedelta(days=1)
         return f'{yesterday_date.year}/{yesterday_date.month}/{yesterday_date.day}/{yesterday_date.hour}.csv'
@@ -48,9 +41,3 @@ class DataArchiverAndDeleter:
         with open(self.CSV_PATH, 'rb') as file:
             self.client_s3.put_object(
                 Bucket=os.environ['S3_BUCKET'], Key=self.key_s3, Body=file)
-
-    def remove_rows_from_rds(self, conn: pyodbc.Connection, record_ids: tuple[int]):
-        with conn.cursor() as cursor:
-            delete_query = self.get_delete_query(len(record_ids))
-            cursor.execute(delete_query, record_ids)
-            conn.commit()

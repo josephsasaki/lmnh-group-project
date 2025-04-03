@@ -1,7 +1,7 @@
 '''
-    DATA PIPELINE 2: extract
-    The following script takes data from the RDS (short-term storage) and loads the data into a pandas dataframe.
-    It specifically extracts data outside a 24 hour window from the current time.
+    DATA PIPELINE 2: RDS manager
+    This script defines the class that interacts with the remote RDS on AWS. It has methods to get old data,
+    delete rows of data and close the connection.
 '''
 
 from os import environ as ENV
@@ -11,7 +11,7 @@ import pyodbc
 from dotenv import load_dotenv
 
 
-class ExpiredDataFinder:
+class RDSManager:
     '''A static class from which extract methods are called.'''
 
     QUERY = '''
@@ -46,12 +46,13 @@ class ExpiredDataFinder:
     JOIN country AS cou ON cou.country_id = cit.country_id
     JOIN continent AS con ON con.continent_id = cou.continent_id
     '''
+    BASE_DELETE_QUERY = "DELETE FROM record WHERE record_id IN ({wildcards})"
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.conn = self._initiate_connection()
 
     def _initiate_connection(self) -> pyodbc.Connection:
-        '''Get the connection to the RDS, using credentials from the .env file.'''
+        '''Function called in init to initiate a connection to RDS in RDSManager'''
         load_dotenv()
         conn_str = (f"DRIVER={{{ENV['DB_DRIVER']}}};SERVER={ENV['DB_HOST']};"
                     f"PORT={ENV['DB_PORT']};DATABASE={ENV['DB_NAME']};"
@@ -59,12 +60,21 @@ class ExpiredDataFinder:
         conn = pyodbc.connect(conn_str)
         return conn
 
-    def get_connection(self):
-        return self.conn
-
-    def close_connection(self):
+    def close_connection(self) -> None:
+        '''Closes a connection to the RDS'''
         self.conn.close()
 
     def extract_data_to_be_archived(self) -> pd.DataFrame:
         '''Extract the rows from the RDS which are outside the 24 hour window.'''
         return pd.read_sql(self.QUERY, self.conn)
+
+    def get_delete_query(self, number_of_ids: int) -> str:
+        '''Creates delete query from a base query'''
+        return self.BASE_DELETE_QUERY.format(wildcards=','.join(['?']*number_of_ids))
+
+    def remove_rows_from_rds(self, record_ids: tuple[int]) -> None:
+        """Removes rows from record table using input record_id's"""
+        with self.conn.cursor() as cursor:
+            delete_query = self.get_delete_query(len(record_ids))
+            cursor.execute(delete_query, record_ids)
+            self.conn.commit()

@@ -1,15 +1,15 @@
 '''
-    DATA PIPELINE 2: transform
-    Take the extracted rows (in the form of a pandas dataframe) and convert to a csv file, 
-    stored locally in the data folder.
+    DATA PIPELINE 2: DataHelper
+    A helper class which would not fit into rds_manager or s3_manager. On method deals with saving the 24 hour
+    old data in a local csv. The second method returns the primary keys (record_id) of the 24 old data
 '''
 
 import os
 import pandas as pd
 
 
-class ExpiredDataHelper:
-    '''Class that helps Extract and Load, by saving data and finding IDs to remove Data'''
+class DataHelper:
+    '''Helper class to aid in handing of data'''
 
     DATA_FOLDER_PATH = os.path.join(os.path.dirname(
         __file__), '..', 'data', 'archived_data.csv')
@@ -19,10 +19,9 @@ class ExpiredDataHelper:
         self.data_to_save = expired_data_df.drop(columns=['record_id'], axis=1)
 
     def convert_dataframe_to_csv(self):
-        '''Saves the data in data_to_save attribute'''
+        '''Saves 24 hour old data into local CSV'''
         self.data_to_save.to_csv(self.DATA_FOLDER_PATH, index=False)
 
     def get_primary_keys(self):
-        '''Extract the primary keys (record_id) from the data. 
-        This will be used to remove the rows from the RDS'''
+        '''returns the primary keys (record_id) of the records that will be deleted'''
         return self.record_ids
