@@ -146,7 +146,7 @@ class DatabaseManager:
         self.cursor.executemany(self.PLANT_UPSERT, plant_values)
 
     def _add_new_recordings(self):
-        '''Insert the new recordingss to the database. 
+        '''Insert the new recordings to the database. 
         Note, the cursor commits must be done externally.'''
         recording_values = [plant.get_record_values() for plant in self.plants]
         self.cursor.executemany(self.RECORDING_INSERT, recording_values)
@@ -160,8 +160,8 @@ class DatabaseManager:
             self._add_new_plants()
             self._add_new_recordings()
             self.cursor.commit()
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"Error in load_all: {e}")
         finally:
             self.cursor.close()
             self.connection.close()

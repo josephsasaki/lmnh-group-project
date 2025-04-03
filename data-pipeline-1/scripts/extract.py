@@ -22,10 +22,13 @@ class RecordingAPIExtractor:
         '''Given a plant_id, make a get request to the endpoint and return the result.
         If the request returns anything other than a success code, None is returned; this
         can happen if the plant_id is invalid, or if a faulty reading is made.'''
-        request = requests.get(f"{self.api_url}{plant_id}", timeout=4)
-        if request.status_code == 200:
-            return request.json()
-        return None
+        try:
+            request = requests.get(f"{self.api_url}{plant_id}", timeout=4)
+            if request.status_code == 200:
+                return request.json()
+            return None
+        except requests.exceptions.ReadTimeout:
+            return None
 
     def extract_api_data(self):
         '''Extract the endpoint data for all ids in the specified range. Multiprocessing

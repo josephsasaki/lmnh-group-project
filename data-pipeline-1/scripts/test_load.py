@@ -27,7 +27,7 @@ def mock_plants():
 @patch("load.pyodbc.connect")
 def test_load_all(mock_connect, mock_plants):
     mock_connection = mock_connect.return_value
-    mock_cursor = mock_connection.cursor.return_value.__enter__.return_value
+    mock_cursor = mock_connection.cursor.return_value
     db_manager = DatabaseManager(mock_plants)
 
     db_manager.load_all()
