@@ -28,7 +28,7 @@ class S3Manager:
             "s3",
             aws_access_key_id=os.environ['ACCESS_KEY_ID'],
             aws_secret_access_key=os.environ['SECRET_ACCESS_KEY_ID'],
-            region_name=os.environ['AWS_REGION'])
+            region_name=os.environ['BUCKET_REGION'])
         return client
 
     def _create_bucket_key(self) -> str:
