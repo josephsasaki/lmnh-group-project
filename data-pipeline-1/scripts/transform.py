@@ -1,6 +1,6 @@
 '''
-    The transformation part of the first data pipeline. The aim of this script is to transform the raw plant data
-    into objects, with cleaned and connected attributes.
+    The transformation part of the first data pipeline. The aim of this script is to 
+    transform the raw plant data into objects, with cleaned and connected attributes.
 '''
 
 from models import Plant
