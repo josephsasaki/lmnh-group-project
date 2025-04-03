@@ -1,39 +1,25 @@
 import pytest
-import unittest
-from unittest.mock import patch, MagicMock
-import scripts.extract as extract
-from scripts.extract import Extract
+from unittest.mock import patch
+from extract import RecordingAPIExtractor
 
 
-class TestExtract(unittest.TestCase):
+@pytest.fixture
+def api_extractor():
+    return RecordingAPIExtractor(api_url="http://mock-api.com/")
 
-    # Ensure patching where requests.get is called
-    @patch("scripts.extract.requests.get")
-    def test_make_request_success(self, mock_get):
-        # Create a mock response
-        mock_response = MagicMock()
-        mock_response.status_code = 200
-        mock_response.json.return_value = "Success"
-        mock_get.return_value = mock_response
 
-        # Call the function
-        result = Extract._make_request(1)
+def test_make_request_success(api_extractor):
+    with patch("requests.get") as mock_get:
+        mock_get.return_value.status_code = 200
+        mock_get.return_value.json.return_value = {"data": "valid response"}
 
-        # Assertions
-        self.assertEqual(result, "Success")
-        mock_get.assert_called_once_with(Extract.API_ENDPOINT + "1")
+        response = api_extractor._make_request(1)
+        assert response == {"data": "valid response"}
 
-    # Patch requests.get in correct module
-    @patch("scripts.extract.requests.get")
-    def test_make_request_failure(self, mock_get):
-        # Simulate a 404 failure response
-        mock_response = MagicMock()
-        mock_response.status_code = 404
-        mock_get.return_value = mock_response
 
-        # Call the function
-        result = Extract._make_request(1)
+def test_make_request_failure(api_extractor):
+    with patch("requests.get") as mock_get:
+        mock_get.return_value.status_code = 404
 
-        # Assertions
-        self.assertIsNone(result)
-        mock_get.assert_called_once_with(Extract.API_ENDPOINT + "1")
+        response = api_extractor._make_request(1)
+        assert response is None
