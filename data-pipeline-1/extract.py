@@ -4,7 +4,7 @@
     plant is read and stored in a Python list.
 '''
 
-import multiprocessing as mp
+from lambda_multiprocessing import Pool
 import requests
 
 
@@ -34,6 +34,6 @@ class RecordingAPIExtractor:
         '''Extract the endpoint data for all ids in the specified range. Multiprocessing
         is used since the API can be quite slow. None results are filtered out the final result.'''
         plant_ids = list(range(self.min_plant_id, self.max_plant_id+1))
-        with mp.Pool(mp.cpu_count()) as p:
+        with Pool() as p:
             fetched_data = p.map(self._make_request, plant_ids)
         return [json_obj for json_obj in fetched_data if json_obj is not None]

@@ -9,7 +9,7 @@ from transform import PlantRecordingFactory
 from load import DatabaseManager
 
 
-def run_pipeline():
+def run_api_pipeline():
     '''This function runs the entire data pipeline for moving data from an API
     to an RDS.'''
     extractor = RecordingAPIExtractor(
@@ -30,12 +30,15 @@ def lambda_handler(event: None, context: None):
     logger.setLevel("INFO")
     try:
         logger.info("Running...")
-        run_pipeline()
+        run_api_pipeline()
         logger.info("Successful")
+        return {
+            'status_code': 200
+        }
     except Exception as e:
         logger.error("Error: %s", e)
         raise
 
 
 if __name__ == "__main__":
-    run_pipeline()
+    run_api_pipeline()
