@@ -1,5 +1,0 @@
-FROM public.ecr.aws/lambda/python:3.8
-    
-COPY ecr_test.py .
-    
-CMD ["ecr_test.lambda_handler"]
