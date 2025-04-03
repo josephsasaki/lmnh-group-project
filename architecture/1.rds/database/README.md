@@ -1,6 +1,6 @@
 # Database  
 
-This directory contains the SQL Server database schema and related scripts for connecting to the database.  
+This directory contains the SQL Server database schema and related scripts for connecting to the database, run the main.tf file before running these scripts.  
 
 ## Files  
 
