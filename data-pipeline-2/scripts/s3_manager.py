@@ -1,6 +1,7 @@
 '''
     DATA PIPELINE 2: s3_manager
-    Deals with interacting with AWS S3 bucket
+    This script defines a class that interacts with the S3 bucket on amazon. This means uploading data
+    to the bucket with a specific key.
 '''
 
 import os
@@ -34,7 +35,7 @@ class S3Manager:
         """Returns the key of the object (csv) to be stored on S3."""
         # storing the previous days data so timedelta is -1 day
         yesterday_date = datetime.now()-timedelta(days=1)
-        return f'{yesterday_date.year}/{yesterday_date.month}/{yesterday_date.day}/{yesterday_date.hour}.csv'
+        return yesterday_date.strftime("%Y/%m/%d/%H.csv")
 
     def upload_csv_to_bucket(self):
         '''Upload the archived data, in the csv to the specified S3 bucket.'''
