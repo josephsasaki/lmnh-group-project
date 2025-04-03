@@ -5,6 +5,7 @@
 '''
 
 from os import environ as ENV
+import sys
 import datetime as datetime
 import pandas as pd
 import pyodbc
@@ -70,6 +71,13 @@ class RDSManager:
 
     def get_delete_query(self, number_of_ids: int) -> str:
         '''Creates delete query from a base query'''
+        if number_of_ids == 0:
+            # Not sure about sys.exit() here
+            print('No 24 hour old data...\nQuitting')
+            sys.exit()
+        elif number_of_ids < 0:
+            raise ValueError(
+                f'The number of ids cant be {number_of_ids} as this is negative')
         return self.BASE_DELETE_QUERY.format(wildcards=','.join(['?']*number_of_ids))
 
     def remove_rows_from_rds(self, record_ids: tuple[int]) -> None:
