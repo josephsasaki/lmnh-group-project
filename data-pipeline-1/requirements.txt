@@ -3,3 +3,4 @@ pytest
 python-dotenv
 pymssql
 requests
+lambda_multiprocessing
