@@ -1,6 +1,7 @@
 '''
     DATA PIPELINE 2: s3_manager
-    Deals with interacting with AWS S3 bucket
+    This script defines a class that interacts with the S3 bucket on amazon. This means uploading data
+    to the bucket with a specific key.
 '''
 
 import os

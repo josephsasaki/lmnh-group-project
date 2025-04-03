@@ -1,8 +1,8 @@
 '''
     DATA PIPELINE 2: DataHelper
-    A helper class which would not fit into rds_manager or s3_manager. On method deals with saving 
-    the 24 hour old data in a local csv. The second method returns the primary keys (record_id) of
-    the 24 old data
+    This script defines a helper class which contains functions outside the scope of RDSManager and S3Manager. 
+    On method deals with saving the 24 hour old data in a local csv. The second method returns the primary 
+    keys (record_id) of the 24 old data.
 '''
 
 import os
