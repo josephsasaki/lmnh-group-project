@@ -17,10 +17,10 @@ if __name__ == "__main__":
     data_helper = DataHelper(df_to_archive)
     # Save to csv
     data_helper.convert_dataframe_to_csv()
-    # Delete from RDS
-    rds_manager.remove_rows_from_rds(data_helper.get_primary_keys())
     # Instantiate S3Manager and upload to bucket
     s3_manager = S3Manager()
     s3_manager.upload_csv_to_bucket()
+    # Delete from RDS
+    rds_manager.remove_rows_from_rds(data_helper.get_primary_keys())
     # Close connection
     rds_manager.close_connection()
