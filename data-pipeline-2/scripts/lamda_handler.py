@@ -7,7 +7,7 @@ def lambda_handler(event: None, context: None):
     logger = logging.getLogger()
     logger.setLevel("INFO")
     try:
-        logger.info(f"Running...")
+        logger.info("Running...")
         run_archive_pipeline()
         logger.info(f"Successful")
     except Exception as e:
