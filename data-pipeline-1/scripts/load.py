@@ -1,6 +1,7 @@
 '''
-    The loading part of the first data pipeline. This script takes the plant data and loads it to the 
-    short-term storage solution (RDS). Reference tables are added first, then the recording data.
+    The loading part of the first data pipeline. This script takes the plant data and 
+    loads it to the short-term storage solution (RDS). Reference tables are added first, 
+    then the recording data.
 '''
 
 from os import environ as ENV
@@ -90,6 +91,8 @@ class DatabaseManager:
 
     def __init__(self, plants: list[Plant]):
         self.plants = plants
+        self.connection = self._make_connection()
+        self.cursor = self.connection.cursor()
 
     def _make_connection(self):
         '''Get the connection to the RDS, using credentials from the .env file.'''
@@ -97,7 +100,7 @@ class DatabaseManager:
         conn_str = (f"DRIVER={{{ENV['DB_DRIVER']}}};SERVER={ENV['DB_HOST']};"
                     f"PORT={ENV['DB_PORT']};DATABASE={ENV['DB_NAME']};"
                     f"UID={ENV['DB_USERNAME']};PWD={ENV['DB_PASSWORD']};Encrypt=no;")
-        self.connection = pyodbc.connect(conn_str)
+        return pyodbc.connect(conn_str)
 
     def _add_new_locations(self):
         '''Merge any new locations to the database. A continent is considered new
@@ -151,16 +154,13 @@ class DatabaseManager:
     def load_all(self) -> None:
         '''Connect to the database and load the plant data passed at instantiation.'''
         try:
-            self._make_connection()
-            with self.connection.cursor() as self.cursor:
-                self._add_new_botanists()
-                self._add_new_locations()
-                self._add_new_plant_type()
-                self._add_new_plants()
-                self._add_new_recordings()
-                # commit all changes to database
-                self.cursor.commit()
-        except:
+            self._add_new_botanists()
+            self._add_new_locations()
+            self._add_new_plant_type()
+            self._add_new_plants()
+            self._add_new_recordings()
+            self.cursor.commit()
+        except Exception:
             pass
         finally:
             self.cursor.close()

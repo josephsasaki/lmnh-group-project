@@ -15,7 +15,8 @@ class Botanist:
         '''Initialise the botanist with data extracted directly from the API.'''
         if not isinstance(botanist_dict_data, dict):
             raise ValueError(
-                f'The input data is not the correct type. It should be a dict but it is a {type(botanist_dict_data)}.')
+                f'The input data is not the correct type. \
+                      It should be a dict but it is a {type(botanist_dict_data)}.')
         self.__email = self.clean_email(botanist_dict_data.get("email"))
         self.__name = self.clean_name(botanist_dict_data.get("name"))
         self.__phone = self.clean_phone(botanist_dict_data.get("phone"))
@@ -30,7 +31,7 @@ class Botanist:
             raise ValueError("Email value is not included in the input data")
         if '@' not in email_in:
             raise ValueError(
-                f"The email is not valid as it doesn't have an '@' symbol.")
+                "The email is not valid as it doesn't have an '@' symbol.")
         return email_in
 
     def clean_name(self, name_in: str) -> str:
@@ -65,7 +66,8 @@ class Location:
         '''Initialise the location object with data passed directly from the API.'''
         if not isinstance(location_data, list):
             raise ValueError(
-                f'The input data is not the correct type. It should be a list but it is a {type(location_data)}.')
+                f'The input data is not the correct type. \
+                    It should be a list but it is a {type(location_data)}.')
         location_dict_data = self.convert_location_data_to_dict(
             location_data)
         self.__latitude = self.clean_coordinate(
@@ -101,7 +103,8 @@ class Location:
         for easier manipulation.'''
         if len(location_data_in) != self.COUNT_OF_LOCATION_ATTRIBUTES:
             raise ValueError(
-                f"There should be {self.COUNT_OF_LOCATION_ATTRIBUTES} values in the location data, instead there is {len(location_data_in)}")
+                f"There should be {self.COUNT_OF_LOCATION_ATTRIBUTES} values in the \
+                    location data, instead there is {len(location_data_in)}")
         return {
             "latitude": location_data_in[0],
             "longitude": location_data_in[1],
@@ -137,14 +140,16 @@ class Location:
                 'The latitude or longitude attribute is not included in the input data.')
         try:
             return float(coordinate_in)
-        except ValueError:
+        except ValueError as exc:
             raise ValueError(
-                f'Value {coordinate_in} is not suitable for latitude or longitude as it cant be converted to a float.')
+                f'Value {coordinate_in} is not suitable for latitude or \
+                    longitude as it cant be converted to a float.') from exc
 
     def clean_continent_capital(self, continent_capital_in: str) -> tuple[str]:
         '''Clean the continent and capital field. Raises error if invalid.'''
         if continent_capital_in is None:
-            return ValueError('The country and capital attribute is not included in the input data.')
+            return ValueError(
+                'The country and capital attribute is not included in the input data.')
         continent_capital_list = continent_capital_in.split('/')
         return continent_capital_list[0], continent_capital_list[1]
 
@@ -181,22 +186,23 @@ class Recording:
     def clean_temperature(self, temperature_in: float) -> float:
         '''Clean the temperature field. Raises error if invalid.'''
         if temperature_in is None:
-            raise ValueError(f'Temperature not included in record data')
+            raise ValueError('Temperature not included in record data')
         return round(temperature_in, 2)
 
     def clean_taken_time(self, timestamp_in: str) -> datetime:
         '''Clean the time taken field. Raises error if invalid.'''
         if timestamp_in is None:
-            raise ValueError(f'Time not included in record data')
+            raise ValueError('Time not included in record data')
         try:
             timestamp_in = datetime.strptime(timestamp_in, "%Y-%m-%d %H:%M:%S")
             if timestamp_in > datetime.now():
                 raise ValueError(
                     f'The time ({timestamp_in}) is invalid as it is in the future')
             return timestamp_in
-        except ValueError:
+        except ValueError as exc:
             raise ValueError(
-                f'The time ({timestamp_in} is in an invalid format. Format should be "%Y-%m-%d %H:%M:%S")')
+                f'The time ({timestamp_in} is in an invalid format. \
+                    Format should be "%Y-%m-%d %H:%M:%S")') from exc
 
 
 class PlantType:
@@ -226,7 +232,8 @@ class PlantType:
                 f'Plant type name value: "{plant_type_name_in}", is not valid')
         return plant_type_name_in
 
-    def clean_plant_type_scientific_name(self, plant_type_scientific_name_in: list[str]) -> str | None:
+    def clean_plant_type_scientific_name(self,
+                                         plant_type_scientific_name_in: list[str]) -> str | None:
         '''Clean the plant type scientific name. Raises error if invalid.'''
         if not plant_type_scientific_name_in:
             return None
@@ -283,6 +290,8 @@ class Plant:
         return self.__plant_type
 
     def get_values(self) -> tuple[str]:
+        '''Get values related to the plant used for loading.
+        return: (plant_number, plant_type_name, botanist_name, city_name, last_watered)'''
         return (
             self.__plant_number,
             self.__plant_type.get_values()[0],
@@ -292,20 +301,24 @@ class Plant:
         )
 
     def get_record_values(self) -> tuple[str]:
+        '''Get the values related to a record, used for loading.
+        return: (soil_moisture, temperature, taken, plant_number)'''
         return (
             *self.__record.get_values(),
             self.__plant_number,
         )
 
     def clean_plant_number(self, plant_number_in: int) -> int:
+        '''Clean the plant_number. Raises error if invalid.'''
         if plant_number_in is None:
             raise ValueError(
                 'There is no plant number in the response object.')
         return plant_number_in
 
     def clean_last_watered(self, last_watered_in: str) -> datetime:
+        '''Clean the last_watered field. Raises error if invalid.'''
         if last_watered_in is None:
-            raise ValueError(f'The last_watered attribute is not included')
+            raise ValueError('The last_watered attribute is not included')
         try:
             last_watered_in = datetime.strptime(
                 last_watered_in, "%a, %d %b %Y %H:%M:%S %Z")
@@ -313,6 +326,7 @@ class Plant:
                 raise ValueError(
                     f'The time ({last_watered_in}) is invalid as it is in the future')
             return last_watered_in
-        except ValueError:
+        except ValueError as exc:
             raise ValueError(
-                f'The time ({last_watered_in} is in an invalid format. Format should be "%Y-%m-%d %H:%M:%S")')
+                f'The time ({last_watered_in} is in an invalid format. \
+                    Format should be "%Y-%m-%d %H:%M:%S")') from exc

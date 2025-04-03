@@ -29,11 +29,11 @@ def lambda_handler(event: None, context: None):
     logger = logging.getLogger()
     logger.setLevel("INFO")
     try:
-        logger.info(f"Running...")
+        logger.info("Running...")
         run_pipeline()
-        logger.info(f"Successful")
+        logger.info("Successful")
     except Exception as e:
-        logger.error(f"Error: {str(e)}")
+        logger.error("Error: %s", e)
         raise
 
 
