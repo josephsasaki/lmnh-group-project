@@ -11,5 +11,5 @@ def lambda_handler(event: None, context: None):
         run_archive_pipeline()
         logger.info("Successful")
     except Exception as e:
-        logger.error(f"Error: {str(e)}")
+        logger.error("Error: %s", e)
         raise
