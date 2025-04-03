@@ -5,7 +5,6 @@
 '''
 
 from os import environ
-import sys
 import pandas as pd
 import pymssql
 from dotenv import load_dotenv
@@ -81,8 +80,3 @@ class RDSManager:
             delete_query = self._get_delete_query(len(record_ids))
             cursor.execute(delete_query, record_ids)
             self.conn.commit()
-
-
-if __name__ == '__main__':
-    manager = RDSManager()
-    print(manager.extract_data_to_be_archived())

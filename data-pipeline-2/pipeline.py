@@ -27,7 +27,3 @@ def run_archive_pipeline():
     rds_manager.remove_rows_from_rds(data_helper.get_primary_keys())
     # Close connection
     rds_manager.close_connection()
-
-
-if __name__ == '__main__':
-    run_archive_pipeline()

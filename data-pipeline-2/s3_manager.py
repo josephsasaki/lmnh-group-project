@@ -7,14 +7,14 @@
 import os
 from datetime import datetime, timedelta
 import boto3
+from zoneinfo import ZoneInfo
 from dotenv import load_dotenv
 
 
 class S3Manager:
     '''Class that interacts with AWS S3 bucket'''
 
-    CSV_PATH = os.path.join(os.path.dirname(
-        __file__), 'data', 'archived_data.csv')
+    CSV_PATH = '/tmp/'+'archived_data.csv'
 
     def __init__(self):
         load_dotenv()
@@ -34,7 +34,8 @@ class S3Manager:
     def _create_bucket_key(self) -> str:
         """Returns the key of the object (csv) to be stored on S3."""
         # storing the previous days data so timedelta is -1 day
-        yesterday_date = datetime.now()-timedelta(days=1)
+        yesterday_date = datetime.now(
+            ZoneInfo("Europe/London"))-timedelta(days=1)
         return yesterday_date.strftime("%Y/%m/%d/%H.csv")
 
     def upload_csv_to_bucket(self):

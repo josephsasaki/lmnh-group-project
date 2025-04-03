@@ -4,8 +4,6 @@ COPY requirements.txt .
 
 RUN pip install -r requirements.txt
 
-RUN mkdir data
-
 
 
 COPY rds_manager.py .
