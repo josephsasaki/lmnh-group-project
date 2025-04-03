@@ -3,3 +3,4 @@ pymysql
 python-dotenv
 boto3
 pyodbc
+freezegun
