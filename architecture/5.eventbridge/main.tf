@@ -82,7 +82,6 @@ resource "aws_iam_role" "scheduler_role" {
   })
 }
 
-
 # Grant the role permission to invoke the Lambda function
 resource "aws_iam_policy" "scheduler_lambda_permission" {
   name        = "scheduler_lambda_invoke_policy"
@@ -94,7 +93,10 @@ resource "aws_iam_policy" "scheduler_lambda_permission" {
       {
         Effect = "Allow"
         Action  = "lambda:InvokeFunction"
-        Resource = data.aws_lambda_function.existing_lambda.arn
+        Resource = [
+                "arn:aws:lambda:eu-west-2:129033205317:function:c16-trenet-pipeline1-lambda:*",
+                "arn:aws:lambda:eu-west-2:129033205317:function:c16-trenet-pipeline1-lambda"
+            ]
       }
     ]
   })
@@ -104,3 +106,4 @@ resource "aws_iam_role_policy_attachment" "scheduler_lambda_attach" {
   policy_arn = aws_iam_policy.scheduler_lambda_permission.arn
   role       = aws_iam_role.scheduler_role.name
 }
+
