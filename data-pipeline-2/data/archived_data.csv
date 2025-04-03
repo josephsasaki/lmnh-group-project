@@ -1,4 +1,1 @@
-names,values
-Joe,10
-Ant,20
-Josh,20
+plant_number,plant_last_watered,record_soil_moisture,record_temperature,record_timestamp,plant_type_name,plant_type_scientific_name,plant_type_image_url,botanist_name,botanist_email,botanist_phone,city_name,city_latitude,city_longitude,country_name,country_capital,continent_name

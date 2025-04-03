@@ -14,9 +14,11 @@ class DataHelper:
     DATA_FOLDER_PATH = os.path.join(os.path.dirname(
         __file__), '..', 'data', 'archived_data.csv')
 
-    def __init__(self, expired_data: pd.DataFrame):
-        self.record_ids = tuple(expired_data['record_id'].to_list())
-        self.data_to_save = expired_data.drop(columns=['record_id'], axis=1)
+    def __init__(self, expired_data_df: pd.DataFrame):
+        if not isinstance(expired_data_df, pd.DataFrame):
+            raise TypeError(f'The input to this class is not a dataframe!')
+        self.record_ids = tuple(expired_data_df['record_id'].to_list())
+        self.data_to_save = expired_data_df.drop(columns=['record_id'], axis=1)
 
     def convert_dataframe_to_csv(self):
         '''Saves 24 hour old data into local CSV'''
