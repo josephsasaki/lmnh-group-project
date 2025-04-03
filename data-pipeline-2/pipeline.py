@@ -22,7 +22,7 @@ def run_archive_pipeline():
     s3_manager.upload_csv_to_bucket()
     # Delete from RDS
     primary_keys = data_helper.get_primary_keys()
-    if len(primary_keys) <= 0:
+    if len(primary_keys) == 0:
         return None
     rds_manager.remove_rows_from_rds(data_helper.get_primary_keys())
     # Close connection
