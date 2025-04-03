@@ -4,10 +4,10 @@
     get old data, delete rows of data and close the connection.
 '''
 
-from os import environ as ENV
+from os import environ
 import sys
 import pandas as pd
-import pyodbc
+import pymssql
 from dotenv import load_dotenv
 
 
@@ -51,13 +51,16 @@ class RDSManager:
     def __init__(self) -> None:
         self.conn = self._initiate_connection()
 
-    def _initiate_connection(self) -> pyodbc.Connection:
+    def _initiate_connection(self) -> pymssql.Connection:
         '''Function called in init to initiate a connection to RDS in RDSManager'''
         load_dotenv()
-        conn_str = (f"DRIVER={{{ENV['DB_DRIVER']}}};SERVER={ENV['DB_HOST']};"
-                    f"PORT={ENV['DB_PORT']};DATABASE={ENV['DB_NAME']};"
-                    f"UID={ENV['DB_USERNAME']};PWD={ENV['DB_PASSWORD']};Encrypt=no;")
-        conn = pyodbc.connect(conn_str)
+        config = dict(environ)
+        conn = pymssql.connect(
+            server=config['DB_HOST'],
+            user=config['DB_USERNAME'],
+            password=config['DB_PASSWORD'],
+            database=config['DB_NAME'],
+            port=config['DB_PORT'])
         return conn
 
     def close_connection(self) -> None:
@@ -84,3 +87,8 @@ class RDSManager:
             delete_query = self._get_delete_query(len(record_ids))
             cursor.execute(delete_query, record_ids)
             self.conn.commit()
+
+
+if __name__ == '__main__':
+    manager = RDSManager()
+    print(manager.extract_data_to_be_archived())
