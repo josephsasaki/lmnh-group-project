@@ -15,6 +15,8 @@ class DataHelper:
         __file__), '..', 'data', 'archived_data.csv')
 
     def __init__(self, expired_data_df: pd.DataFrame):
+        if not isinstance(expired_data_df, pd.DataFrame):
+            raise TypeError(f'The input to this class is not a dataframe!')
         self.record_ids = tuple(expired_data_df['record_id'].to_list())
         self.data_to_save = expired_data_df.drop(columns=['record_id'], axis=1)
 
