@@ -1,7 +1,8 @@
 # Architecture
 
 ### Architecture Diagram  
-- ![Architecture-diagram](Architecture-diagram.png) – Cloud Architecture diagram of the implemented data pipeline solution.  
+![Architecture-diagram](Architecture-diagram.png) 
+– Cloud Architecture diagram of the implemented data pipeline solution.  
 
 This data pipeline is designed for efficiency, scalability, and cost-effectiveness using AWS services. EventBridge serves as the central scheduler, triggering key processes at different intervals. Every minute, an EventBridge schedule triggers Lambda Pipeline 1, which extracts data from the LMNH Plant API, transforms it, and loads it into an RDS SQL Server database, chosen for its reliability, structured query capabilities, and seamless AWS integration. Lambda functions were used for their serverless nature, allowing for automatic scaling and a cost-effective way to execute the ETL tasks without the need for managing infrastructure. Meanwhile, an ECS service running on AWS Fargate provides a continuously updating Streamlit dashboard, delivering real-time insights into the processed data.
 
@@ -12,7 +13,7 @@ Every hour, a second EventBridge schedule triggers Lambda Pipeline 2, which extr
 The following subdirectories contain Terraform scripts for specific AWS services. Each subdirectory includes a `main.tf` script and a `variables.tf` file, the scripts should be run in the order they appear below:
 
 ### **1.RDS**  
-[`1.rds/`](1.rds/) – Contains Terraform scripts to create and configure an AWS RDS instance with a SQL Server engine. Additionally, this directory also contains [`rds/database`](1.rds/database) which contains documentation of how to create and connect to the database.
+[`1.rds/`](1.rds/) – Contains Terraform scripts to create and configure an AWS RDS instance with a SQL Server engine. Additionally, this directory also contains [`RDS/DATABASE`](1.rds/database) which contains documentation of how to create and connect to the database.
 For more details, refer to the [RDS README](1.rds/README.md).
 
 ### **2.S3**  
