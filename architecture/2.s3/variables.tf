@@ -1,7 +1,13 @@
 variable "BUCKET_NAME" {
-  description = "Name of the s3 bucket"
+  description = "Name of the s3 archive bucket"
   type = string
   default = "c16-trenet-s3"
+}
+
+variable "BUCKET_NAME2" {
+  description = "Name of the s3 athena queries bucket"
+  type = string
+  default = "c16-trenet-athena-output-s3"
 }
 
 variable "REGION" {
