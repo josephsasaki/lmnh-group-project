@@ -39,7 +39,7 @@ Ensure that all these environment variables are set in your environment or defin
 
 ## **Required Configuration**
 
-Before running the pipeline, make sure that all the necessary environment variables are defined on the cloud or locally. These are essential for the pipeline to connect to your RDS instance and S3 bucket.
+Before running the pipeline, make sure that all the necessary environment variables are defined on the cloud or locally. These are essential for the pipeline to connect to Athena and S3 bucket.
 
 ---
 ## **Steps to Run the CLI**
