@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 from models import DataManager, RecordingChart, LastWateredChart, AlertsChart
 
 
+PAGE_TITLE = 'LMNH Plants Dashboard'
 DASHBOARD_TITLE = 'LMNH Plants Dashboard'
 RECORD_QUERY = '''
     SELECT 
