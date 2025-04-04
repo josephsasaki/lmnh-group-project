@@ -1,4 +1,9 @@
-# AWS Data Pipeline with Terraform and Lambda
+# Storing Plant records for the Liverpool Natural History Museum
+
+This project aims to help the Liverpool Natural History Museum (LNMH) monitor the health of their plants in their new botanical wing which will display and showcase the diversity of plant life in the region and the important roles plant life plays in our daily lives. The museum has a large number of plants and are looking for a way to monitor the health of plants and alert gardeners when there is a problem with the plants.
+LMNH has an API setup already which returns sensor data from the plants as well as other useful data about the plant such as its name, species and the gardener looking after it. These are updated every minute.
+
+Costs are a major factor so LNMH wants to use a temporary short term database that stores the last 24 hours of plant data only, older data should be removed and archived. The cost being a restriction has influenced many of the decisions in the project the most important of these being the cloud resources that we have used. Decisions such as using Lambda's instead of EC2 instances and the use of S3 buckets have been made to minimize the cost of the architecture. A dashboard was created, using the data in the RDS, where visualizations and alerts were set up to notify gardeners when a plant needs attention.
 
 This repository contains Infrastructure as Code (IaC) scripts to provision cloud resources on AWS using terraform and data pipelines to manage plant record data on AWS. It provisions cloud resources using Terraform and includes two data processing pipelines deployed as AWS Lambda functions.
 
