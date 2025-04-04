@@ -1,5 +1,7 @@
 pandas
 streamlit
 altair
-pythob-dotenv
+python-dotenv
 scipy
+pymssql
+numpy
