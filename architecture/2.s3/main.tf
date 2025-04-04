@@ -30,9 +30,9 @@ resource "aws_s3_bucket_versioning" "versioning" {
 
 
 resource "aws_s3_bucket" "c16-trenet-athena-output-s3" {
-  bucket = var.BUCKET_NAME2
+  bucket = var.ATHENA_BUCKET_NAME
 
   tags = {
-    Name = var.BUCKET_NAME2
+    Name = var.ATHENA_BUCKET_NAME
   }
 }

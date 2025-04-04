@@ -4,7 +4,7 @@ variable "BUCKET_NAME" {
   default = "c16-trenet-s3"
 }
 
-variable "BUCKET_NAME2" {
+variable "ATHENA_BUCKET_NAME" {
   description = "Name of the s3 athena queries bucket"
   type = string
   default = "c16-trenet-athena-output-s3"

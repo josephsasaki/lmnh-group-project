@@ -8,8 +8,8 @@ terraform {
 }
 
 resource "aws_glue_catalog_table" "example1" {
-  name          = "c16_trenet_plant_table"
-  database_name = "c16_trenet_new_db"  # Replace with your Athena database name
+  name          = var.ATHENA_TABLE_NAME
+  database_name = var.ATHENA_DB_NAME
   
   table_type = "EXTERNAL_TABLE"
   
@@ -20,7 +20,7 @@ resource "aws_glue_catalog_table" "example1" {
   }
 
   storage_descriptor {
-    location      = "s3://c16-trenet-s3/"  # Your S3 data location
+    location      = var.BUCKET_LOCATION  
     input_format  = "org.apache.hadoop.mapred.TextInputFormat"
     output_format = "org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat"
 

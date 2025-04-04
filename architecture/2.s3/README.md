@@ -16,7 +16,7 @@ Below is a list of all the variables in `variables.tf`:
 - **Type**: `string`
 - **Default**: `"c16-trenet-s3"`
 
-#### **1. BUCKET_NAME2**
+#### **1. ATHENA_BUCKET_NAME**
 - **Description**: The name of the S3 bucket that athena queries will output to.
 - **Type**: `string`
 - **Default**: `"c16-trenet-athena-output-s3"`
