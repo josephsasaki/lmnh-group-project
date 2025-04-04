@@ -93,10 +93,22 @@ resource "aws_iam_policy" "scheduler_lambda_permission" {
       {
         Effect = "Allow"
         Action  = "lambda:InvokeFunction"
-        Resource = [
-                "arn:aws:lambda:eu-west-2:129033205317:function:c16-trenet-pipeline1-lambda:*",
-                "arn:aws:lambda:eu-west-2:129033205317:function:c16-trenet-pipeline1-lambda"
-            ]
+        Resource = "arn:aws:lambda:eu-west-2:129033205317:function:c16-trenet-pipeline1-lambda"
+      },
+      {
+        Effect = "Allow"
+        Action  = "lambda:InvokeFunction"
+        Resource = "arn:aws:lambda:eu-west-2:129033205317:function:c16-trenet-pipeline1-lambda:*"
+      },
+      {
+        Effect = "Allow"
+        Action  = "lambda:InvokeFunction"
+        Resource = "arn:aws:lambda:eu-west-2:129033205317:function:c16-trenet-pipeline2-lambda"
+      },
+      {
+        Effect = "Allow"
+        Action  = "lambda:InvokeFunction"
+        Resource = "arn:aws:lambda:eu-west-2:129033205317:function:c16-trenet-pipeline2-lambda:*"
       }
     ]
   })

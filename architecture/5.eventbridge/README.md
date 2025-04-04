@@ -39,12 +39,12 @@ Below is a list of all the variables in `variables.tf`:
 #### **6. SCHEDULE1_TRIGGER_RATE**
 - **Description**: EventBridge schedule trigger frequency for pipeline 1.
 - **Type**: `string`
-- **Default**: `"rate(1 minute)"`
+- **Default**: `"cron(* * * * ? *)"`
 
 #### **7. SCHEDULE2_TRIGGER_RATE**
 - **Description**: EventBridge schedule trigger frequency for pipeline 2.
 - **Type**: `string`
-- **Default**: `"rate(1 hour)"`
+- **Default**: `"cron(0 * * * ? *)"`
 
 ---
 
