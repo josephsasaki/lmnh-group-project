@@ -7,7 +7,7 @@ terraform {
   }
 }
 
-resource "aws_glue_catalog_table" "example1" {
+resource "aws_glue_catalog_table" "athena_table" {
   name          = var.ATHENA_TABLE_NAME
   database_name = var.ATHENA_DB_NAME
   

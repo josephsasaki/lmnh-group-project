@@ -1,4 +1,3 @@
-
 variable "ATHENA_DB_NAME" {
   description = "Name of the athena database"
   type = string
@@ -10,7 +9,6 @@ variable "ATHENA_TABLE_NAME" {
   type = string
   default = "c16_trenet_athena_table"
 }
-
 
 variable "BUCKET_LOCATION" {
   description = "Location of the s3 archive bucket"
