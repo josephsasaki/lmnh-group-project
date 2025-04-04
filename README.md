@@ -16,6 +16,7 @@ The following subdirectories contain scripts for each major component of this pr
 The [`architecture/`](architecture/) directory contains Terraform scripts to provision AWS resources (such as the Lambda's, RDS and S3), the RDS database schema and the cloud architecture diagram.
 For details, see [Architecture README](architecture/README.md).
 
+---
 
 ### **2. Data Pipeline 1: Data Ingestion**
 

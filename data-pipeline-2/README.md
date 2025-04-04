@@ -71,19 +71,27 @@ Note these steps should be given by AWS after creating an ECR but these have bee
 
 1. **Login to AWS CLI**:
 
+   ```
    aws ecr get-login-password --region [REGION] | docker login --username AWS --password-stdin [AWS_ACCOUNT_ID].dkr.ecr.[REGION].amazonaws.com
+   ```
 
 2. **Build Docker image**:
 
+   ```
    docker build --platform="linux/amd64" --provenance=false -t [NAME_OF_ECR_REPO] .
+   ```
    
 3. **Tag Docker image**:
 
+   ```
    docker tag [NAME_OF_EXR_REPO]:latest [AWS_ACCOUNT_ID].dkr.ecr.[REGION].amazonaws.com/[NAME_OF_EXR_REPO]:latest
+   ```
 
 4. **Push Docker image**:
 
-    docker push [AWS_ACCOUNT_ID].dkr.ecr.[REGION].amazonaws.com/[NAME_OF_EXR_REPO]:latest
+   ```
+   docker push [AWS_ACCOUNT_ID].dkr.ecr.[REGION].amazonaws.com/[NAME_OF_EXR_REPO]:latest
+   ```
 
 4. **Create Lambda and Test**:
     - Create the Lambda, select the image and test the output.
