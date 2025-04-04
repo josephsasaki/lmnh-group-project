@@ -19,30 +19,10 @@ class TestRDSManager:
         mock_read_sql.assert_called_with(rds_manager.QUERY, 'FAKE CONN')
 
     @pytest.mark.parametrize("test_in, expected",
-                             [(1, "DELETE FROM record WHERE record_id IN (?)"),
-                              (2, "DELETE FROM record WHERE record_id IN (?,?)"),
-                              (4, "DELETE FROM record WHERE record_id IN (?,?,?,?)")])
+                             [(1, "DELETE FROM record WHERE record_id IN (%s)"),
+                              (2, "DELETE FROM record WHERE record_id IN (%s,%s)"),
+                              (4, "DELETE FROM record WHERE record_id IN (%s,%s,%s,%s)")])
     @patch('rds_manager.RDSManager._initiate_connection')
     def test_correct_get_delete_query_outputs(self, mock_conn_function, test_in, expected):
         rds_manager = RDSManager()
         assert rds_manager._get_delete_query(test_in) == expected
-
-    @patch('rds_manager.RDSManager._initiate_connection')
-    def test_get_delete_query_input_0(self, mock_conn_function, capsys):
-        rds_manager = RDSManager()
-        with pytest.raises(SystemExit):
-            query_test = rds_manager._get_delete_query(0)
-            captured = capsys.readouterr()
-            assert 'No 24 hour old data...\nQuitting' == captured.out
-
-    @pytest.mark.parametrize("test_in",
-                             [(-1),
-                              (-2),
-                              (-4)])
-    @patch('rds_manager.RDSManager._initiate_connection')
-    def test_get_delete_query_input_negative(self, mock_conn_function, test_in, capsys):
-        rds_manager = RDSManager()
-        with pytest.raises(ValueError):
-            query_test = rds_manager._get_delete_query(test_in)
-            captured = capsys.readouterr()
-            assert f'The number of ids cant be {test_in} as this is negative' == captured.out

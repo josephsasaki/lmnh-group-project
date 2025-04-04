@@ -14,7 +14,7 @@ from dotenv import load_dotenv
 class S3Manager:
     '''Class that interacts with AWS S3 bucket'''
 
-    CSV_PATH = '/tmp/'+'archived_data.csv'
+    CSV_PATH = '/tmp/' + 'archived_data.csv'
 
     def __init__(self):
         load_dotenv()
