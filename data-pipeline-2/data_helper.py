@@ -4,7 +4,6 @@
     On method deals with saving the 24 hour old data in a local csv. The second method returns the primary 
     keys (record_id) of the 24 old data.
 '''
-
 import pandas as pd
 
 
