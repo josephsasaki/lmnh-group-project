@@ -1,7 +1,7 @@
 provider "aws" {
-    region = var.REGION
-    secret_key = var.AWS_SECRET_KEY
-    access_key = var.AWS_ACCESS_KEY
+    region = var.BUCKET_REGION
+    secret_key = var.SECRET_ACCESS_KEY_ID
+    access_key = var.ACCESS_KEY_ID
 }
 
 ## ECR
@@ -23,8 +23,6 @@ data "aws_ecr_image" "lambda-image-pipeline2" {
   repository_name = data.aws_ecr_repository.c16-trenet-pipeline2.name
   image_tag       = "latest"
 }
-
-
 
 ## Permissions etc. for the Lambda
 
@@ -79,13 +77,15 @@ resource "aws_lambda_function" "c16-trenet-lambda-pipeline1" {
   role = aws_iam_role.lambda-role.arn
   package_type = "Image"
   image_uri = data.aws_ecr_image.lambda-image-pipeline.image_uri
+  timeout = 120
   environment {
     variables = {
-         DB_USER = var.DB_USERNAME
+         DB_USERNAME = var.DB_USERNAME
          DB_PASSWORD = var.DB_PASSWORD
          DB_PORT = var.DB_PORT
          DB_NAME = var.DB_NAME
          DB_DRIVER = var.DB_DRIVER
+         DB_HOST = var.DB_HOST
     }
   }
 }
@@ -96,13 +96,22 @@ resource "aws_lambda_function" "c16-trenet-lambda-pipeline2" {
   role = aws_iam_role.lambda-role.arn
   package_type = "Image"
   image_uri = data.aws_ecr_image.lambda-image-pipeline2.image_uri
+  timeout = 120
   environment {
     variables = {
-         DB_USER = var.DB_USERNAME
+         DB_USERNAME = var.DB_USERNAME
          DB_PASSWORD = var.DB_PASSWORD
          DB_PORT = var.DB_PORT
          DB_NAME = var.DB_NAME
          DB_DRIVER = var.DB_DRIVER
+         DB_HOST = var.DB_HOST
+         BUCKET_REGION = var.BUCKET_REGION
+         S3_BUCKET = var.S3_BUCKET
+         ACCESS_KEY_ID = var.ACCESS_KEY_ID
+         SECRET_ACCESS_KEY_ID = var.SECRET_ACCESS_KEY_ID
+
+
+
     }
   }
 }

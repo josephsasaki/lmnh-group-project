@@ -31,11 +31,11 @@ variable "PIPELINE2_SCHEDULE_NAME" {
 variable "SCHEDULE1_TRIGGER_RATE" {
     description = "EventBridge Schedule trigger frequency for pipeline 1"
     type = string
-    default = "rate(1 minute)"
+    default = "cron(* * * * ? *)"
 }
 
 variable "SCHEDULE2_TRIGGER_RATE" {
     description = "EventBridge Schedule trigger frequency for pipeline 2"
     type = string
-    default = "rate(1 hour)"
+    default = "cron(0 * * * ? *)"
 }

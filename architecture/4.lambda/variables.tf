@@ -1,5 +1,5 @@
-variable "REGION" {
-  description = "Desired region the lambdas are located in"
+variable "BUCKET_REGION" {
+  description = "Desired region"
   type = string
   default = "eu-west-2"
 }
@@ -61,14 +61,26 @@ variable "DB_NAME" {
   type = string
 }
 
-variable "AWS_SECRET_KEY" {
+variable "DB_HOST" {
+  description = "The RDS SQL server database end point"
+  type = string
+}
+
+variable "SECRET_ACCESS_KEY_ID" {
   description = "The users AWS secret key"
   type = string
 }
 
-variable "AWS_ACCESS_KEY" {
+variable "ACCESS_KEY_ID" {
   description = "The users AWS access key"
   type = string
 }
+
+variable "S3_BUCKET" {
+  description = "Location of the s3 bucket"
+  type = string
+  default = "c16-trenet-s3"
+}
+
 
 
