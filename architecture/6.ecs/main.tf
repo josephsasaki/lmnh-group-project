@@ -22,7 +22,7 @@ resource "aws_security_group" "c16-trenet-ecs-sg" {
 
   ingress {
     from_port        = 1433
-    to_port          = 1433
+    to_port          = 8502
     protocol         = "tcp"
     cidr_blocks      = ["0.0.0.0/0"]
     ipv6_cidr_blocks = ["::/0"]
@@ -68,7 +68,7 @@ resource "aws_ecs_task_definition" "c16-trenet-task" {
         { name = "DB_HOST", value = var.DB_HOST },
         { name = "DB_PORT", value = var.DB_PORT },
         { name = "DB_NAME", value = var.DB_NAME },
-        { name = "DB_USER", value = var.DB_USERNAME },
+        { name = "DB_USERNAME", value = var.DB_USERNAME },
         { name = "DB_PASSWORD", value = var.DB_PASSWORD }
       ]
     }
