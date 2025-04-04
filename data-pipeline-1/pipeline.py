@@ -3,7 +3,6 @@
     AWS Lambda is also defined here.
 '''
 
-import logging
 from extract import RecordingAPIExtractor
 from transform import PlantRecordingFactory
 from load import DatabaseManager
@@ -22,23 +21,3 @@ def run_api_pipeline():
     plants = factory.produce_plant_objects()
     db_manager = DatabaseManager(plants)
     db_manager.load_all()
-
-
-def lambda_handler(event: None, context: None):
-    '''This function is called by the AWS Lambda to run the Python scripts.'''
-    logger = logging.getLogger()
-    logger.setLevel("INFO")
-    try:
-        logger.info("Running...")
-        run_api_pipeline()
-        logger.info("Successful")
-        return {
-            'status_code': 200
-        }
-    except Exception as e:
-        logger.error("Error: %s", e)
-        raise
-
-
-if __name__ == "__main__":
-    run_api_pipeline()
