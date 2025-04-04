@@ -2,6 +2,7 @@
 
 ### Architecture Diagram  
 ![Architecture-diagram](Architecture-diagram.png) 
+
 – Cloud Architecture diagram of the implemented data pipeline solution.  
 
 This data pipeline is designed for efficiency, scalability, and cost-effectiveness using AWS services. EventBridge serves as the central scheduler, triggering key processes at different intervals. Every minute, an EventBridge schedule triggers Lambda Pipeline 1, which extracts data from the LMNH Plant API, transforms it, and loads it into an RDS SQL Server database, chosen for its reliability, structured query capabilities, and seamless AWS integration. Lambda functions were used for their serverless nature, allowing for automatic scaling and a cost-effective way to execute the ETL tasks without the need for managing infrastructure. Meanwhile, an ECS service running on AWS Fargate provides a continuously updating Streamlit dashboard, delivering real-time insights into the processed data.
