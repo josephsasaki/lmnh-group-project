@@ -38,3 +38,9 @@ The [`dashboard/`](dashboard/) directory contains the scripts to run a `streamli
 For more details, refer to the [Dashboard README](dashboard/README.md).
 
 The current deployed dashboard can be accessed through the following link: `http://18.168.203.70:8501/`
+
+---
+
+### **5. Archive Retrieval**
+
+The [`archive_retrieval/`](archive_retrieval/) directory contains a python CLI for accessing archived data in the S3 bucket.
