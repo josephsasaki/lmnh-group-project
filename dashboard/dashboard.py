@@ -5,10 +5,10 @@ import streamlit as st
 import pandas as pd
 from dotenv import load_dotenv
 
-from models import DataManager, RecordingChart, LastWateredChart
+from models import DataManager, RecordingChart, LastWateredChart, AlertsChart
 
 
-DASHBOARD_TITLE = 'LMNH Dashboard'
+DASHBOARD_TITLE = 'LMNH Plants Dashboard'
 RECORD_QUERY = '''
     SELECT 
         p.plant_number,
@@ -55,12 +55,13 @@ def main():
     st.title(DASHBOARD_TITLE)
     connection = init_connection()
     dm = DataManager(full_df=run_query(RECORD_QUERY, connection))
-
-    tab1, tab2 = st.tabs(["Recordings", "Last Watered"])
+    tab1, tab2, tab3 = st.tabs(["Recordings", "Last Watered", "Alerts"])
     with tab1:
         RecordingChart(dm).show()
     with tab2:
         LastWateredChart(dm).show()
+    with tab3:
+        AlertsChart(dm).show()
 
 
 if __name__ == "__main__":
