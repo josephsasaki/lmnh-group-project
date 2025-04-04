@@ -7,13 +7,13 @@ variable "REGION" {
 variable "LAMBDA_NAME1" {
     description = "Name of lambda used for pipeline 1"
     type = string
-    default = "c16-trenet-pipeline2-lambda"
+    default = "c16-trenet-pipeline1-lambda"
 }
 
 variable "LAMBDA_NAME2" {
     description = "Name of lambda used for pipeline 2"
     type = string
-    default = "c16-trenet-pipeline1-lambda"
+    default = "c16-trenet-pipeline2-lambda"
 }
 
 variable "PIPELINE1_SCHEDULE_NAME" {
