@@ -1,6 +1,6 @@
 # Archive Retrieval
 
-This directory contains Python scripts that allow a user to retrieve data by running a script with two command line inputs, the start date and the end date, which then queries the Athena database. Athena outputs the query result in an S3 bucket. This result is then downloaded from the S3 bucket and stored locally as `requested_data.csv`. It includes:
+This directory contains Python scripts that allow a user to retrieve archived data by running a script with two command line inputs, the start date and the end date, which then queries the Athena database. Athena outputs the query result in an S3 bucket. This result is then downloaded from the S3 bucket and stored locally as `requested_data.csv`. It includes:
 
 - `athena_manager.py`: Manages interactions with the Athena database via the `AthenaHandler` object. This object creates a `boto3` Athena client on instantiation. `AthenaHandler` has the method `query_athena` which queries the Athena table and downloads the result to the S3 bucket.
 
@@ -10,7 +10,6 @@ This directory contains Python scripts that allow a user to retrieve data by run
 
 - `requirements.txt`: Lists all Python dependencies required to run the pipeline and the appropriate tests.
 ---
-
 
 ## **Environment Variables**
 
