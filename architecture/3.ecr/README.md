@@ -27,6 +27,7 @@ Below is a list of all the variables in `variables.tf`:
 - **Default**: `"c16-trenet-dashboard-ecr"`
 
 ---
+
 ## **Required Configuration: terraform.tfvars**
 
 The `terraform.tfvars` file is where you provide values for the variables that do not have a default. These are essential for the Terraform configuration to run successfully.
