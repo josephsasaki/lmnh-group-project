@@ -230,7 +230,7 @@ class PlantType:
         return plant_type_name_in
 
     def clean_plant_type_scientific_name(self,
-                                         plant_type_scientific_name_in: list[str]) -> str | None:
+                                         plant_type_scientific_name_in: list[str]) -> str:
         '''Clean the plant type scientific name. Raises error if invalid.'''
         if not plant_type_scientific_name_in:
             return None
@@ -239,7 +239,7 @@ class PlantType:
                 'The scientific name for the plant should be input as a list')
         return plant_type_scientific_name_in[0]
 
-    def clean_image_url(self, images_url_in: dict | None) -> str | None:
+    def clean_image_url(self, images_url_in: dict) -> str:
         '''Clean the image url. Raises error if invalid.'''
         if images_url_in is None:
             return None

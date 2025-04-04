@@ -27,3 +27,12 @@ resource "aws_s3_bucket_versioning" "versioning" {
     status = "Enabled"
   }
 }
+
+
+resource "aws_s3_bucket" "c16-trenet-athena-output-s3" {
+  bucket = var.ATHENA_BUCKET_NAME
+
+  tags = {
+    Name = var.ATHENA_BUCKET_NAME
+  }
+}
