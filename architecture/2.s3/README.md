@@ -12,9 +12,14 @@ The `variables.tf` file defines several variables used for configuring the S3 bu
 Below is a list of all the variables in `variables.tf`:
 
 #### **1. BUCKET_NAME**
-- **Description**: The name of the S3 bucket.
+- **Description**: The name of the S3 bucket that will archive all plant data.
 - **Type**: `string`
 - **Default**: `"c16-trenet-s3"`
+
+#### **1. ATHENA_BUCKET_NAME**
+- **Description**: The name of the S3 bucket that athena queries will output to.
+- **Type**: `string`
+- **Default**: `"c16-trenet-athena-output-s3"`
 
 #### **2. REGION**
 - **Description**: The AWS region where the S3 bucket will be deployed.
